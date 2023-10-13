@@ -2,12 +2,12 @@
     <v-container fluid>
         <v-form v-model="valid" fast-fail @submit.prevent ref="form">
             <v-text-field v-model="title" :rules="rules.rule" label="Title" required></v-text-field>
-            <v-text-field v-model="chapter" :rules="rules.numberRules" type="number" label="Last chapter"
-                required></v-text-field>
-            <v-text-field v-model="rating" :rules="rules.numberRules" type="number" label="Rating" required></v-text-field>
+            <v-text-field v-model="chapter" :rules="rules.numberRules" type="number" label="Last chapter"></v-text-field>
+            <v-text-field v-model="rating" :rules="rules.numberRules" type="number" label="Rating"></v-text-field>
             <v-text-field v-model="kisses" label="Kisses"></v-text-field>
+            <v-text-field v-model="tags" label="Tags (separated by comma)"></v-text-field>
 
-            <v-textarea v-model="review" label="Review" :rules="rules.rule"></v-textarea>
+            <v-textarea v-model="review" label="Review"></v-textarea>
 
             <div class="center">
                 <v-btn :disabled="!valid" color="success" style="color: black" @click="save()">Save</v-btn>
@@ -29,10 +29,11 @@ export default {
             review: '',
             novel: null,
             kisses: '',
+            tags: '',
 
             rules: {
                 rule: [v => !!v || 'Required'],
-                numberRules: [v => !!v || 'Required', v => !isNaN(v) || 'No!'],
+                numberRules: [v => !!v || true, v => !isNaN(v) || 'No!'],
             }
         }
     },
@@ -50,6 +51,7 @@ export default {
                 rating: this.rating,
                 review: this.review,
                 kisses: this.kisses,
+                tags: this.tags,
                 url: this.novel.url,
             }
             console.log(novel)
@@ -75,6 +77,7 @@ export default {
         this.rating = this.novel.rating
         this.review = this.novel.review
         this.kisses = this.novel.kisses
+        this.tags = this.novel.tags
     }
 }
 </script>

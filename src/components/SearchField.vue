@@ -1,44 +1,3 @@
-
-<style>
-.v-selection-control-group {
-    flex-direction: row !important;
-}
-
-.v-selection-control__input+.v-selection-control__wrapper {
-    display: none !important;
-    width: 0px !important;
-}
-
-.v-label--clickable {
-    width: 100% !important;
-    text-align: center !important;
-}
-
-.active {
-    background-color: #232D3F;
-    /* background-color: #ae6f2f; */
-    /* stroke: rgba(255,255,255,0.4); */
-    /* filter: drop-shadow(0 0 10px rgb(255,255,255)); */
-    color: white;
-}
-
-.top {
-    top: 0;
-}
-
-.v-container--fluid {
-    max-width: 80% !important;
-}
-
-image {
-    display: inline;
-}
-
-.v-list-item__content {
-    display: grid;
-    grid-template-columns: 1fr 15fr 1fr;
-}
-</style>
 <template>
     <v-container class="top" fluid px-0>
         <v-radio-group v-model="selectedOption" row>
@@ -49,17 +8,25 @@ image {
             <!-- Add more options here -->
         </v-radio-group>
         <v-combobox label="Search novels" :items="items" v-model:search="search" persistent-hint :hide-no-data="false"
-            @update:search="searchHints" @change="searchHints" dense hide-details="false">
+            @update:search="searchHints" @change="searchHints">
             <template #item="{ item }">
-                <v-list-item ripple> <!--  @click="select(item)" -->
+                <v-list-item ripple class="result"> <!--  @click="select(item)" -->
                     <!-- <img :src="item.raw.image" :alt="item.raw.image" /> -->
                     <v-img :src="item.raw.image" :alt="item.raw.image" width="40" height="60"></v-img>
                     <a :href="item.raw.url" target="_blank">
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                     </a>
-                    <v-btn @click="handleButtonClick(item.raw)" :color="libraryUrls.includes(item.raw.url) ? 'success' : 'primary'">
+                    <v-btn @click="handleButtonClick(item.raw)"
+                        :color="libraryUrls.includes(item.raw.url) ? 'success' : 'primary'">
                         <v-icon>{{ libraryUrls.includes(item.raw.url) ? 'mdi-check' : 'mdi-plus' }}</v-icon>
                     </v-btn>
+                </v-list-item>
+            </template>
+            <template v-slot:no-data>
+                <v-list-item>
+                    <v-list-item-title>
+                        No results matching "<strong>{{ search }}</strong>".
+                    </v-list-item-title>
                 </v-list-item>
             </template>
         </v-combobox>
@@ -72,7 +39,7 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            selectedOption: 'webnovel',
+            selectedOption: 'mtlnovel',
             currentText: '',
             search: null,
             values: '',
@@ -171,3 +138,65 @@ export default {
     }
 }
 </script>
+
+<style>
+.v-selection-control-group {
+    flex-direction: row !important;
+}
+
+.v-selection-control__input+.v-selection-control__wrapper {
+    display: none !important;
+    width: 0px !important;
+}
+
+.v-label--clickable {
+    width: 100% !important;
+    text-align: center !important;
+}
+
+.active {
+    background-color: #232D3F;
+    /* background-color: #ae6f2f; */
+    /* stroke: rgba(255,255,255,0.4); */
+    /* filter: drop-shadow(0 0 10px rgb(255,255,255)); */
+    color: white;
+}
+
+.top {
+    top: 0;
+}
+
+.v-container--fluid {
+    max-width: 80% !important;
+}
+
+/** A lot of CSS MAGIC to make the little popup for the combobox the same width as the combobox and that doesn't break the "no result found" words */
+
+.v-overlay-container>* {
+    overflow: hidden !important;
+}
+
+.v-list-item-title {
+    hyphens: none !important;
+}
+
+.v-overlay__content {
+    width: fit-content !important;
+    overflow-x: hidden !important;
+    overflow: hidden !important;
+}
+
+/* .v-overlay-container .v-list-item__content {
+    grid-area: unset !important;
+    display: block  !important;
+} */
+
+image {
+    display: inline;
+}
+
+.result .v-list-item__content {
+    display: grid;
+    grid-template-columns: 1fr 15fr 1fr;
+}
+</style>

@@ -21,7 +21,10 @@
                         <span style="margin-left: 3px; font-size: 1rem; vertical-align:middle">({{ novel.rating }})</span>
                     </div>
                     <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
-                    <v-card-text>{{ novel.review ? novel.review.substr(0, 50) + "..." : 'No review yet' }}</v-card-text>
+                    <v-card-text>{{ novel.review ? novel.review.substr(0, 150) + "..." : 'No review yet' }}</v-card-text>
+                    <v-chip v-if="novel.tags" v-for="tag in novel.tags.split(',')">
+                        {{ tag.trim() }}
+                    </v-chip>
                 </v-card>
             </v-col>
         </v-row>

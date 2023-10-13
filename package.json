@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "nodemon server/search.js"
   },
   "dependencies": {
     "axios": "^1.5.1",
@@ -13,6 +14,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "natural": "^6.7.2",
+    "nodemon": "^3.0.1",
     "sqlite3": "^5.1.6",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
