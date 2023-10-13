@@ -5,6 +5,7 @@
             <v-text-field v-model="chapter" :rules="rules.numberRules" type="number" label="Last chapter"
                 required></v-text-field>
             <v-text-field v-model="rating" :rules="rules.numberRules" type="number" label="Rating" required></v-text-field>
+            <v-text-field v-model="kisses" label="Kisses"></v-text-field>
 
             <v-textarea v-model="review" label="Review" :rules="rules.rule"></v-textarea>
 
@@ -27,6 +28,7 @@ export default {
             rating: 6,
             review: '',
             novel: null,
+            kisses: '',
 
             rules: {
                 rule: [v => !!v || 'Required'],
@@ -47,6 +49,7 @@ export default {
                 chapter: this.chapter,
                 rating: this.rating,
                 review: this.review,
+                kisses: this.kisses,
                 url: this.novel.url,
             }
             console.log(novel)
@@ -71,6 +74,7 @@ export default {
         this.chapter = this.novel.chapter
         this.rating = this.novel.rating
         this.review = this.novel.review
+        this.kisses = this.novel.kisses
     }
 }
 </script>

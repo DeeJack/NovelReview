@@ -91,7 +91,7 @@ const db = new sqlite3.Database('./library.db')
 
 
 // Create table library if it doesn't exist
-db.run('CREATE TABLE IF NOT EXISTS library (id INT PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT)')
+db.run('CREATE TABLE IF NOT EXISTS library (id INT PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT)')
 
 app.use(cors());
 
@@ -133,7 +133,7 @@ app.get('/api/webnovel/search', (req, res) => {
 });
 
 app.get('/api/library', (req, res) => {
-    const selectQuery = `SELECT title, url, image, source, rating, review, chapter FROM library`
+    const selectQuery = `SELECT title, url, image, source, rating, review, chapter, kisses FROM library`
 
     db.all(selectQuery, [], (err, rows) => {
         if (err) {
@@ -176,13 +176,14 @@ app.put('/api/library', (req, res) => {
     const rating = req.body.rating
     const review = req.body.review
     const chapter = req.body.chapter
+    const kisses = req.body.kisses
     const url = req.body.url
 
     console.log(rating, review, chapter, url)
 
-    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ? WHERE url = ?`
+    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, kisses = ? WHERE url = ?`
 
-    db.run(updateQuery, [rating, review, chapter, url], (err) => {
+    db.run(updateQuery, [rating, review, chapter, kisses, url], (err) => {
         if (err) {
             throw err;
         }

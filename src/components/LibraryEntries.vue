@@ -11,14 +11,16 @@
                     <v-img :src="novel.image" cover>
                     </v-img>
                     <v-card-title :title="novel.title">{{ novel.title }}</v-card-title>
-                    <v-card-subtitle>Last read: {{ novel.chapter }}</v-card-subtitle>
-                    <div>
+                    <v-card-subtitle v-if="novel.chapter">Last read: {{ novel.chapter }}</v-card-subtitle>
+                    <div style="margin: 5px 0px 0px 10px">
                         <v-icon :color="getColor(novel)"
                             v-for="i in [...Array(Math.floor(novel.rating || 0)).keys()]">mdi-star</v-icon>
                         <v-icon :color="getColor(novel)"
                             v-if="Math.floor(novel.rating) < novel.rating">mdi-star-half</v-icon>
                         <v-icon v-for="i in [...Array(10 - Math.ceil(novel.rating || 0)).keys()]">mdi-star-outline</v-icon>
+                        <span style="margin-left: 3px; font-size: 1rem; vertical-align:middle">({{ novel.rating }})</span>
                     </div>
+                    <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
                     <v-card-text>{{ novel.review ? novel.review.substr(0, 50) + "..." : 'No review yet' }}</v-card-text>
                 </v-card>
             </v-col>
