@@ -83,6 +83,11 @@ export default {
             libraryUrls: []
         }
     },
+    computed: {
+        libraryUrls() {
+            return this.library.map((novel) => novel.url)
+        }
+    },
     created() {
         axios.get('http://localhost:3000/api/library')
             .then((response) => {
@@ -136,6 +141,7 @@ export default {
                         console.log(response)
                         this.libraryUrls.push(novel.url)
                         this.library.push(novel)
+                        this.$emit('add-novel', this.library); // Emit an event with the new data
                     })
                     .catch((error) => {
                         console.log(error)
@@ -148,7 +154,9 @@ export default {
                 })
                     .then((response) => {
                         console.log(response)
+                        this.library = this.library.filter((novel) => novel.url !== novel.url)
                         this.libraryUrls = this.libraryUrls.filter((url) => url !== novel.url)
+                        this.$emit('add-novel', this.library); // Emit an event with the new data
                     })
                     .catch((error) => {
                         console.log(error)

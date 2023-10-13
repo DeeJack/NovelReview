@@ -133,7 +133,7 @@ app.get('/api/webnovel/search', (req, res) => {
 });
 
 app.get('/api/library', (req, res) => {
-    const selectQuery = `SELECT title, url, image, source, rating, review FROM library`
+    const selectQuery = `SELECT title, url, image, source, rating, review, chapter FROM library`
 
     db.all(selectQuery, [], (err, rows) => {
         if (err) {
@@ -175,11 +175,14 @@ app.post('/api/library', (req, res) => {
 app.put('/api/library', (req, res) => {
     const rating = req.body.rating
     const review = req.body.review
+    const chapter = req.body.chapter
     const url = req.body.url
 
-    const updateQuery = `UPDATE library SET rating = ?, review = ? WHERE url = ?`
+    console.log(rating, review, chapter, url)
 
-    db.run(updateQuery, [rating, review, url], (err) => {
+    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ? WHERE url = ?`
+
+    db.run(updateQuery, [rating, review, chapter, url], (err) => {
         if (err) {
             throw err;
         }

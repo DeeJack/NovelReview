@@ -157,3 +157,4 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+.vscode/
