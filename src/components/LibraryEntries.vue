@@ -74,11 +74,6 @@ export default {
             })
         },
     },
-    watch: {
-        library() {
-            console.log('Library changed', this.library)
-        }
-    }
 }
 </script>
 

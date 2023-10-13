@@ -60,7 +60,6 @@ export default {
             .then((response) => {
                 this.library = response.data
                 this.libraryUrls = this.library.map((novel) => novel.url)
-                console.log(this.library)
             })
             .catch((error) => {
                 console.log(error)
@@ -78,7 +77,6 @@ export default {
                     axios.get(`http://localhost:3000/api/${this.selectedOption}/search?query=${this.search}`)
                         .then((response) => {
                             this.items = response.data
-                            console.log(this.items)
                         })
                         .catch((error) => {
                             console.log(error)
@@ -87,10 +85,8 @@ export default {
             } else {
                 this.items = []
             }
-            console.log(this.currentText, this.search)
         },
         handleButtonClick(novel) {
-            console.log(novel)
             // Call your function here
             // For demonstration, we'll just toggle the icon and color
             let added = true;
@@ -105,7 +101,6 @@ export default {
                     source: this.selectedOption
                 })
                     .then((response) => {
-                        console.log(response)
                         this.libraryUrls.push(novel.url)
                         this.library.push(novel)
                         this.$emit('add-novel', this.library); // Emit an event with the new data
@@ -120,7 +115,6 @@ export default {
                     }
                 })
                     .then((response) => {
-                        console.log(response)
                         this.library = this.library.filter((novel) => novel.url !== novel.url)
                         this.libraryUrls = this.libraryUrls.filter((url) => url !== novel.url)
                         this.$emit('add-novel', this.library); // Emit an event with the new data

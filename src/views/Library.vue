@@ -26,7 +26,6 @@ export default {
     },
     methods: {
         updateLibrary(newLibrary) {
-            console.log('Updatung library', newLibrary)
             this.library = newLibrary
         }
     },

@@ -7,13 +7,12 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 // const puppeteer = require('puppeteer');
-const natural = require('natural');
+// const natural = require('natural');
 
 // This function searches MTLNovel for novels, given a query.
 // URL: https://www.mtlnovel.com/wp-admin/admin-ajax.php?action=autosuggest&q=test&__amp_source_origin=https://www.mtlnovel.com
 async function searchMTL(query) {
     let url = `https://www.mtlnovel.com/wp-admin/admin-ajax.php?action=autosuggest&q=${query}&__amp_source_origin=https://www.mtlnovel.com`
-    console.log(url)
     const searchUrl =
         'https://www.mtlnovel.com/wp-admin/admin-ajax.php?action=autosuggest&q=' +
         query +
@@ -35,7 +34,6 @@ async function searchMTL(query) {
     // }
     const res = await fetch(searchUrl, { headers });
     let results = await res.json();
-    console.log(results)
     let novels = []
     results = results.items[0].results
     for (var i = 0; i < results.length; i++) {
@@ -67,7 +65,6 @@ function searchWebnovel(query) {
             const jsonText = $(resultBooksContainer[0]).text().trim();
             let jsonData = JSON.parse(jsonText);
             jsonData = jsonData.itemListElement
-            console.log(jsonData)
 
             for (var i = 0; i < jsonData.length; i++) {
                 novels.push({
@@ -113,7 +110,6 @@ app.get('/search', (req, res) => {
         // console.log(values[0].concat(values[1]))
         const searchResults = values[0].concat(values[1])
 
-        console.log(searchResults);
         res.send(searchResults)
     });
 });
@@ -179,8 +175,6 @@ app.put('/api/library', (req, res) => {
     const kisses = req.body.kisses
     const tags = req.body.tags
     const url = req.body.url
-
-    console.log(rating, review, chapter, url)
 
     const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, kisses = ?, tags = ? WHERE url = ?`
 

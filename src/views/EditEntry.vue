@@ -58,7 +58,6 @@ export default {
 
             axios.put('http://localhost:3000/api/library', novel)
                 .then((response) => {
-                    console.log(response)
                     this.$router.push('/')
                 })
                 .catch((error) => {
