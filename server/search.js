@@ -88,7 +88,7 @@ const db = new sqlite3.Database('./library.db')
 
 
 // Create table library if it doesn't exist
-db.run('CREATE TABLE IF NOT EXISTS library (title TEXT, url TEXT PRIMARY KEY, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT)')
+db.run('CREATE TABLE IF NOT EXISTS library (title TEXT, url TEXT PRIMARY KEY, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
 
 app.use(cors());
 
@@ -129,7 +129,7 @@ app.get('/api/webnovel/search', (req, res) => {
 });
 
 app.get('/api/library', (req, res) => {
-    const selectQuery = `SELECT title, url, image, source, rating, review, chapter, kisses, tags FROM library`
+    const selectQuery = `SELECT title, url, image, source, rating, review, chapter, kisses, tags FROM library ORDER BY added_at DESC`
 
     db.all(selectQuery, [], (err, rows) => {
         if (err) {
@@ -200,6 +200,40 @@ app.delete('/api/library/', (req, res) => {
 });
 
 app.listen(3000)
+
+const cron = require('node-cron')
+
+cron.schedule('0 0 * * *', () => { // This will run at midnight every day
+    db.serialize(() => {
+        db.backup(`./backups/backup-${new Date().toISOString()}.db`, (err) => {
+            if (err) {
+                return console.error(err.message);
+            }
+            console.log('Backup completed successfully.');
+        });
+    });
+
+    // Delete backups older than 7 days
+    const fs = require('fs');
+    const directory = './backups';
+
+    fs.readdir(directory, (err, files) => {
+        if (err) throw err;
+
+        for (const file of files) {
+            const backupDate = new Date(file.split('-')[1].split('.')[0])
+            const today = new Date()
+            const diffTime = Math.abs(today - backupDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 7) {
+                fs.unlink(`${directory}/${file}`, err => {
+                    if (err) throw err;
+                });
+            }
+        }
+    });
+});
 
 // ON close event
 process.on('SIGINT', () => {

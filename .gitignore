@@ -160,3 +160,5 @@ coverage
 .vscode/
 
 *.db
+backups/
+backups/*
