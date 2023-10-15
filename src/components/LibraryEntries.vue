@@ -73,6 +73,9 @@ export default {
             this.$router.push({ name: 'Edit' })
         },
         deleteNovel(novel) {
+            let ok = confirm(`Are you sure you want to delete ${novel.title}?`)
+            if (!ok)
+                return
             axios.delete('http://localhost:3000/api/library/', { data: { url: novel.url } })
                 .then((response) => {
                     let updatedLibrary = this.library.filter((item) => item.url !== novel.url)
