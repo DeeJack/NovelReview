@@ -12,7 +12,7 @@
             <template #item="{ item }">
                 <v-list-item ripple class="result"> <!--  @click="select(item)" -->
                     <!-- <img :src="item.raw.image" :alt="item.raw.image" /> -->
-                    <v-img :src="item.raw.image" :alt="item.raw.image" width="40" height="60"></v-img>
+                    <v-img :src="item.raw.image.includes('webnovel.com') ? '' : item.raw.image" :alt="item.raw.image" width="40" height="60"></v-img>
                     <a :href="item.raw.url" target="_blank">
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                     </a>
@@ -104,6 +104,7 @@ export default {
                 })
                     .then((response) => {
                         // this.libraryUrls.push(novel.url)
+                        novel.image = response.data.image
                         let updatedLibrary = [novel, ...this.library]
                         this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
                     })

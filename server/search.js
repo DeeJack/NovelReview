@@ -6,8 +6,37 @@
 // - image: the url of the novel's cover image
 const axios = require('axios')
 const cheerio = require('cheerio')
-// const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 // const natural = require('natural');
+let browser = null;
+(async () => {
+    browser = await puppeteer.launch();
+})();
+
+const downloadImage = async (imageUrl, destinationPath) => {
+    if (imageUrl.includes("mtlnovel.com")) {
+        let response = await axios.get(imageUrl, {
+            responseType: 'arraybuffer'
+        })
+        fs.writeFileSync(destinationPath, Buffer.from(response.data, 'binary'));
+        return
+    }
+
+    if (!browser)
+        browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    try {
+        await page.goto(imageUrl, { waitUntil: 'networkidle2' });
+
+        const imageBuffer = await page.screenshot();
+        fs.writeFileSync(destinationPath, imageBuffer);
+        console.log('Image saved successfully.');
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
 
 // This function searches MTLNovel for novels, given a query.
 // URL: https://www.mtlnovel.com/wp-admin/admin-ajax.php?action=autosuggest&q=test&__amp_source_origin=https://www.mtlnovel.com
@@ -80,7 +109,7 @@ function searchWebnovel(query) {
                     title: jsonData[i].name,
                     url: jsonData[i].url,
                     source: "webnovel",
-                    image: 'http://localhost:3000/no-image.png'
+                    image: jsonData[i].image
                 })
             }
             return novels
@@ -97,7 +126,7 @@ const db = new sqlite3.Database('./library.db')
 
 
 // Create table library if it doesn't exist
-db.run('CREATE TABLE IF NOT EXISTS library (title TEXT, url TEXT PRIMARY KEY, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
+db.run('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
 
 app.use(cors());
 
@@ -138,12 +167,15 @@ app.get('/api/webnovel/search', (req, res) => {
 });
 
 app.get('/api/library', (req, res) => {
-    const selectQuery = `SELECT title, url, image, source, rating, review, chapter, kisses, tags FROM library ORDER BY added_at DESC`
+    const selectQuery = `SELECT id, title, url, image, source, rating, review, chapter, kisses, tags FROM library ORDER BY added_at DESC`
 
     db.all(selectQuery, [], (err, rows) => {
         if (err) {
             throw err;
         }
+        rows.forEach((row) => {
+            row.image = `http://localhost:3000/images/${row.id}.png`
+        });
         res.send(rows)
     });
 });
@@ -172,7 +204,15 @@ app.post('/api/library', (req, res) => {
             if (err) {
                 throw err;
             }
-            res.send('Successfully added to library')
+            db.all('SELECT last_insert_rowid() as id', [], async (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                downloadImage(image, `./public/images/${rows[0]['id']}.png`)
+                res.send({ image: `http://localhost:3000/images/${rows[0]['id']}.png`})
+            });
+
+            // downloadImage(image, `./public/images/${}.png`)
         });
     });
 });
@@ -245,9 +285,10 @@ cron.schedule('0 0 * * *', () => { // This will run at midnight every day
 });
 
 // ON close event
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
     console.log('Closing database connection...');
     db.close();
+    await browser.close();
     process.exit();
 });
 

@@ -1,39 +1,39 @@
 <template>
     <v-container fluid>
         <v-text-field v-model="search" label="Search in library"></v-text-field>
-        <v-row dense>
-            <v-col v-for="novel in filteredLibrary" :key="novel.title" :cols="3" class="mg10">
-                <v-card>
-                    <div style="position:absolute; top:0; right: 0; z-index: 1;">
-                        <v-btn elevation="0" icon @click="goToEdit(novel)"
-                            style="background-color: transparent;">
-                            <v-icon style="color: black">mdi-pencil</v-icon>
-                        </v-btn>
-                        <v-btn elevation="0" icon @click="deleteNovel(novel)"
-                            style="background-color: transparent;">
-                            <v-icon style="color: black">mdi-trash-can</v-icon>
-                        </v-btn>
-                    </div>
-                    <v-img :src="novel.image" cover>
-                    </v-img>
-                    <v-card-title :title="novel.title">{{ novel.title }}</v-card-title>
-                    <v-card-subtitle v-if="novel.chapter">Last read: {{ novel.chapter }}</v-card-subtitle>
-                    <div style="margin: 5px 0px 0px 10px">
-                        <v-icon :color="getColor(novel)"
-                            v-for="i in [...Array(Math.floor(novel.rating || 0)).keys()]">mdi-star</v-icon>
-                        <v-icon :color="getColor(novel)"
-                            v-if="Math.floor(novel.rating) < novel.rating">mdi-star-half</v-icon>
-                        <v-icon v-for="i in [...Array(10 - Math.ceil(novel.rating || 0)).keys()]">mdi-star-outline</v-icon>
-                        <span style="margin-left: 3px; font-size: 1rem; vertical-align:middle">({{ novel.rating }})</span>
-                    </div>
-                    <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
-                    <v-card-text>{{ novel.review ? novel.review.substr(0, 150) + "..." : 'No review yet' }}</v-card-text>
-                    <v-chip v-if="novel.tags" v-for="tag in novel.tags.split(',')">
-                        {{ tag.trim() }}
-                    </v-chip>
-                </v-card>
-            </v-col>
-        </v-row>
+        <div class="container">
+            <v-card v-for="novel in filteredLibrary" :key="novel.title" class="note">
+                <div style="position:absolute; top:0; right: 0; z-index: 1;">
+                    <v-btn elevation="0" icon @click="goToEdit(novel)" style="background-color: rgba(255, 255, 255, 0.5)">
+                        <v-icon
+                            :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn elevation="0" icon @click="deleteNovel(novel)" style="background-color: rgba(255, 255, 255, 0.5);">
+                        <v-icon
+                            :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-trash-can</v-icon>
+                    </v-btn>
+                </div>
+                <v-img :src="novel.image" cover>
+                    <img @error="this.src = this.src" />
+                </v-img>
+                <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
+                        :href="novel.url" target="_blank">{{ novel.title }}</a></v-card-title>
+                <v-card-subtitle v-if="novel.chapter">Last read: {{ novel.chapter }}</v-card-subtitle>
+                <div style="margin: 5px 0px 0px 10px">
+                    <v-icon :color="getColor(novel)"
+                        v-for="i in [...Array(Math.floor(novel.rating || 0)).keys()]">mdi-star</v-icon>
+                    <v-icon :color="getColor(novel)" v-if="Math.floor(novel.rating) < novel.rating">mdi-star-half</v-icon>
+                    <v-icon v-for="i in [...Array(10 - Math.ceil(novel.rating || 0)).keys()]">mdi-star-outline</v-icon>
+                    <span style="margin-left: 3px; font-size: 1rem; vertical-align:middle">({{ novel.rating }})</span>
+                </div>
+                <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
+                <v-card-text
+                    v-html="novel.review ? (novel.review.replace('\n', '<br/>').substr(0, novel.image.includes('no-image') ? '1500' : '200') + '...') : 'No review yet'"></v-card-text>
+                <v-chip v-if="novel.tags" v-for="tag in novel.tags.split(',')">
+                    {{ tag.trim() }}
+                </v-chip>
+            </v-card>
+        </div>
     </v-container>
 </template>
 
@@ -81,7 +81,7 @@ export default {
                 .catch((error) => {
                     console.log(error)
                 })
-        }
+        },
     },
     computed: {
         filteredLibrary() {
@@ -104,5 +104,27 @@ export default {
 
 .v-card-title {
     font-size: 1.2rem;
+}
+
+.container {
+    -webkit-column-count: 4;
+    /* Chrome, Safari, Opera */
+    -moz-column-count: 4;
+    /* Firefox */
+    column-count: 4;
+    -webkit-column-gap: .5rem;
+    /* Chrome, Safari, Opera */
+    -moz-column-gap: .5rem;
+    /* Firefox */
+    column-gap: .5rem;
+
+}
+
+
+.note {
+    width: calc(100% / 1);
+    margin: 15px;
+    width: fit-content;
+    max-width: 19vw;
 }
 </style>
