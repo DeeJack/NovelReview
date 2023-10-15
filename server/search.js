@@ -11,7 +11,7 @@ const fs = require('fs');
 // const natural = require('natural');
 let browser = null;
 (async () => {
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch({headless: 'new'});
 })();
 
 const downloadImage = async (imageUrl, destinationPath) => {
@@ -24,7 +24,7 @@ const downloadImage = async (imageUrl, destinationPath) => {
     }
 
     if (!browser)
-        browser = await puppeteer.launch();
+        browser = await puppeteer.launch({headless: 'new'});
     const page = await browser.newPage();
 
     try {
