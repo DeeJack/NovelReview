@@ -5,8 +5,8 @@ import LibraryEntries from '../components/LibraryEntries.vue';
 </script>
 <template>
     <main>
-        <SearchField @add-novel="updateLibrary"/>
-        <LibraryEntries :library="library" :libraryUrls="libraryUrls"/>
+        <SearchField @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls"/>
+        <LibraryEntries @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls"/>
     </main>
 </template>
 

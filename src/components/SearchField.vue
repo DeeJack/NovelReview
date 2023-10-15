@@ -16,7 +16,11 @@
                     <a :href="item.raw.url" target="_blank">
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                     </a>
-                    <v-btn @click="handleButtonClick(item.raw)"
+                    <v-btn v-if="!libraryUrls.includes(item.raw.url)" @click="addAndEdit(item.raw)"
+                        :color="libraryUrls.includes(item.raw.url) ? 'success' : 'primary'" icon>
+                        <v-icon>mdi-book-edit</v-icon>
+                    </v-btn>
+                    <v-btn @click="handleButtonClick(item.raw)" icon
                         :color="libraryUrls.includes(item.raw.url) ? 'success' : 'primary'">
                         <v-icon>{{ libraryUrls.includes(item.raw.url) ? 'mdi-check' : 'mdi-plus' }}</v-icon>
                     </v-btn>
@@ -35,7 +39,6 @@
 </template>
 <script>
 import axios from 'axios'
-// TODO: Separate the buttons by url? And add to the list the ones already in the library
 export default {
     data() {
         return {
@@ -46,24 +49,20 @@ export default {
             items: [],
             buttonIcon: 'mdi-plus',
             buttonColor: 'primary',
-            library: [],
-            libraryUrls: []
         }
     },
+    props: ['library', 'libraryUrls'],
     computed: {
-        libraryUrls() {
-            return this.library.map((novel) => novel.url)
-        }
     },
     created() {
-        axios.get('http://localhost:3000/api/library')
-            .then((response) => {
-                this.library = response.data
-                this.libraryUrls = this.library.map((novel) => novel.url)
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        // axios.get('http://localhost:3000/api/library')
+        //     .then((response) => {
+        //         this.library = response.data
+        //         this.libraryUrls = this.library.map((novel) => novel.url)
+        //     })
+        //     .catch((error) => {
+        //         console.log(error)
+        //     })
     },
     methods: {
         searchHints() {
@@ -86,43 +85,52 @@ export default {
                 this.items = []
             }
         },
-        handleButtonClick(novel) {
+        async handleButtonClick(novel) {
             // Call your function here
             // For demonstration, we'll just toggle the icon and color
             let added = true;
             if (this.libraryUrls.includes(novel.url))
                 added = false;
 
+            if (this.selectedOption === 'mtlnovel')
+                novel.title = novel.title.replace('<strong>', '').replace('</strong>', '')
+
             if (added) {
-                axios.post('http://localhost:3000/api/library', {
-                    title: novel.title.replace('<strong>', '').replace('</strong>', ''),
+                return await axios.post('http://localhost:3000/api/library', {
+                    title: novel.title,
                     url: novel.url,
                     image: novel.image,
                     source: this.selectedOption
                 })
                     .then((response) => {
-                        this.libraryUrls.push(novel.url)
-                        this.library.push(novel)
-                        this.$emit('add-novel', this.library); // Emit an event with the new data
+                        // this.libraryUrls.push(novel.url)
+                        let updatedLibrary = [novel, ...this.library]
+                        this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
                     })
                     .catch((error) => {
                         console.log(error)
                     })
             } else {
-                axios.delete(`http://localhost:3000/api/library/`, {
-                    body: {
+                return await axios.delete(`http://localhost:3000/api/library/`, {
+                    data: {
                         url: novel.url
                     }
                 })
                     .then((response) => {
-                        this.library = this.library.filter((novel) => novel.url !== novel.url)
-                        this.libraryUrls = this.libraryUrls.filter((url) => url !== novel.url)
-                        this.$emit('add-novel', this.library); // Emit an event with the new data
+                        let updatedLibrary = this.library
+                        updatedLibrary = updatedLibrary.filter((item) => item.url !== novel.url)
+                        this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
                     })
                     .catch((error) => {
                         console.log(error)
                     })
             }
+        },
+        addAndEdit(novel) {
+            this.handleButtonClick(novel).then(_ => {
+                localStorage.setItem('novel', JSON.stringify(novel))
+                this.$router.push({ name: 'Edit' })
+            })
         }
     },
     watch: {
@@ -191,6 +199,6 @@ image {
 
 .result .v-list-item__content {
     display: grid;
-    grid-template-columns: 1fr 15fr 1fr;
+    grid-template-columns: 1fr 15fr 1fr 1fr;
 }
 </style>

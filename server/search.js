@@ -33,7 +33,13 @@ async function searchMTL(query) {
     //     headers.append('cookie', cookies);
     // }
     const res = await fetch(searchUrl, { headers });
-    let results = await res.json();
+    let results = []
+    try {
+        results = await res.json();
+    } catch (e) {
+        console.log(e)
+        return []
+    }
     let novels = []
     results = results.items[0].results
     for (var i = 0; i < results.length; i++) {
@@ -63,6 +69,9 @@ function searchWebnovel(query) {
 
             const resultBooksContainer = $('div.result-books-container > script');
             const jsonText = $(resultBooksContainer[0]).text().trim();
+            if (jsonText === '') {
+                return novels
+            }
             let jsonData = JSON.parse(jsonText);
             jsonData = jsonData.itemListElement
 

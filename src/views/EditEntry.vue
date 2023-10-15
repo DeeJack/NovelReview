@@ -25,7 +25,7 @@ export default {
             valid: false,
             title: '',
             chapter: 0,
-            rating: 6,
+            rating: 0,
             review: '',
             novel: null,
             kisses: '',
@@ -33,7 +33,7 @@ export default {
 
             rules: {
                 rule: [v => !!v || 'Required'],
-                numberRules: [v => !!v || true, v => !isNaN(v) || 'No!'],
+                numberRules: [v=> console.log(v) || true, v => v === undefined || v === null || !isNaN(v) || 'No!'],
             }
         }
     },

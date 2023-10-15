@@ -4,10 +4,16 @@
         <v-row dense>
             <v-col v-for="novel in filteredLibrary" :key="novel.title" :cols="3" class="mg10">
                 <v-card>
-                    <v-btn icon @click="goToEdit(novel)"
-                        style="position:absolute; top:0; right: 0; z-index: 1; background-color: transparent;">
-                        <v-icon style="color: black">mdi-pencil</v-icon>
-                    </v-btn>
+                    <div style="position:absolute; top:0; right: 0; z-index: 1;">
+                        <v-btn elevation="0" icon @click="goToEdit(novel)"
+                            style="background-color: transparent;">
+                            <v-icon style="color: black">mdi-pencil</v-icon>
+                        </v-btn>
+                        <v-btn elevation="0" icon @click="deleteNovel(novel)"
+                            style="background-color: transparent;">
+                            <v-icon style="color: black">mdi-trash-can</v-icon>
+                        </v-btn>
+                    </div>
                     <v-img :src="novel.image" cover>
                     </v-img>
                     <v-card-title :title="novel.title">{{ novel.title }}</v-card-title>
@@ -65,6 +71,16 @@ export default {
         goToEdit(novel) {
             localStorage.setItem('novel', JSON.stringify(novel))
             this.$router.push({ name: 'Edit' })
+        },
+        deleteNovel(novel) {
+            axios.delete('http://localhost:3000/api/library/', { data: { url: novel.url } })
+                .then((response) => {
+                    let updatedLibrary = this.library.filter((item) => item.url !== novel.url)
+                    this.$emit('add-novel', updatedLibrary)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
     },
     computed: {
@@ -87,6 +103,6 @@ export default {
 }
 
 .v-card-title {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
 }
 </style>
