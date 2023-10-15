@@ -6,13 +6,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'library',
-      component: () => import('../views/Library.vue') 
+      component: () => import('../views/Library.vue'),
+      meta: {
+        title: 'Library'
+      }
     },
     {
       path: '/edit',
       name: 'Edit',
       params: true,
-      component: () => import('../views/EditEntry.vue')
+      component: () => import('../views/EditEntry.vue'),
+      meta: {
+        title: 'Edit Entry'
+      }
     }
     // {
     //   path: '/about',
@@ -23,6 +29,11 @@ const router = createRouter({
     //   component: () => {}
     // }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  document.title = `${to.meta.title}`
+  next()
 })
 
 export default router
