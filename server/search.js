@@ -8,7 +8,8 @@ const axios = require('axios')
 const cheerio = require('cheerio')
 const puppeteer = require('puppeteer');
 const fs = require('fs');
-const { Builder, By } = require('selenium-webdriver');
+const webdriver = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
 
 // const natural = require('natural');
 let browser = null;
@@ -28,17 +29,38 @@ const downloadImage = async (imageUrl, destinationPath) => {
                         "Chrome/83.0.4103.116 Safari/537.36",
                 }
             })
+            if (response.status !== 200) {
+                throw new Error('Response status was not 200')
+            }
+            if (response.data.length === 0) {
+                if (!imageUrl.endsWith('.webp')) {
+                    return downloadImage(imageUrl + '.webp', destinationPath)
+                }
+                else
+                    throw new Error('Response data was empty')
+            }
             fs.writeFileSync(destinationPath, Buffer.from(response.data, 'binary'));
             return
         } catch(e) {
             console.log('Cloudflare?', e)
             // Cloudflare detected, open browser using selenium to solve the challenge and then download the image
-            const driver = await new Builder().forBrowser('chrome').build();
+            const chromeOptions = new chrome.Options();
+            chromeOptions.addArguments('--disable-notifications');
+            chromeOptions.addArguments('--window-size=1920,1080');
+
+            // Initialize WebDriver using Chrome
+            const driver = new webdriver.Builder()
+                .forBrowser('chrome')
+                .setChromeOptions(chromeOptions)
+                .build();
 
             try {
                 await driver.get(imageUrl);
-            
+                await driver.sleep(5000);
                 // Save the screenshot as an image
+                const cookies = await driver.manage().getCookies();
+                const formattedCookies = cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
+                axios.defaults.headers.common['Cookie'] = formattedCookies;
                 const imageBase64 = await driver.takeScreenshot();
                 const imageBuffer = Buffer.from(imageBase64, 'base64');
                 fs.writeFileSync(destinationPath, imageBuffer);
@@ -204,11 +226,12 @@ app.get('/api/library', (req, res) => {
             throw err;
         }
         rows.forEach((row) => {
-            row.image = `http://localhost:3000/images/${row.id}.png`
-
+            let originalImage = row.image
             if (!fs.existsSync(`./public/images/${row.id}.png`)) {
-                downloadImage(row.image, `./public/images/${row.id}.png`)
+                downloadImage(originalImage, `./public/images/${row.id}.png`)
             }
+            
+            row.image = `http://localhost:3000/images/${row.id}.png`
         });
         res.send(rows)
     });
