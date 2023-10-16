@@ -219,7 +219,22 @@ app.get('/api/webnovel/search', (req, res) => {
 });
 
 app.get('/api/library', (req, res) => {
-    const selectQuery = `SELECT id, title, url, image, source, rating, review, chapter, kisses, tags FROM library ORDER BY added_at DESC`
+    const orderBy = req.query.orderBy || 0
+    let direction = req.query.direction || 0
+    let order = 'added_at'
+    let directionString = 'DESC'
+
+    if (orderBy === '1')
+        order = 'rating'
+    else if (orderBy === '2')
+        order = 'chapter'
+    else if (orderBy === '3')
+        order = 'title'
+
+    if (direction === '1')
+        directionString = 'ASC'
+
+    const selectQuery = `SELECT id, title, url, image, source, rating, review, chapter, kisses, tags FROM library ORDER BY ${order} ${directionString}`
 
     db.all(selectQuery, [], (err, rows) => {
         if (err) {

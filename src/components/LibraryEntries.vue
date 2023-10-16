@@ -1,6 +1,14 @@
 <template>
     <v-container fluid>
         <v-text-field v-model="search" label="Search in library"></v-text-field>
+        <div class="end">
+            <v-select v-model="order" label="Order" :items="orders" item-title="name" item-value="value"
+                hint="Order by" persistent-hint single-line style="max-width: 10%"
+                @update:modelValue="updateOrder()"></v-select>
+            <v-select v-model="direction" label="Direction" :items="directions" item-title="name" item-value="value"
+                hint="Direction" persistent-hint single-line style="max-width: 10%"
+                @update:modelValue="updateOrder()"></v-select>
+        </div>
         <div class="container">
             <v-card v-for="novel in filteredLibrary" :key="novel.title" class="note">
                 <div style="position:absolute; top:0; right: 0; z-index: 1;">
@@ -51,6 +59,36 @@ export default {
     data() {
         return {
             search: '',
+            order: 0,
+            orders: [
+                {
+                    name: 'Last added',
+                    value: 0,
+                },
+                {
+                    name: 'Rating',
+                    value: 1,
+                },
+                {
+                    name: 'Chapter',
+                    value: 2,
+                },
+                {
+                    name: 'Title',
+                    value: 3,
+                },
+            ],
+            direction: 0,
+            directions: [
+                {
+                    name: 'Descending',
+                    value: 0,
+                },
+                {
+                    name: 'Ascending',
+                    value: 1,
+                },
+            ]
         }
     },
     props: ['library', 'libraryUrls'],
@@ -92,6 +130,9 @@ export default {
                     console.log(error)
                 })
         },
+        updateOrder() {
+            this.$emit('update-order', this.order, this.direction)
+        }
     },
     computed: {
         filteredLibrary() {
@@ -138,5 +179,15 @@ export default {
     /* margin: 15px; */
     width: fit-content;
     max-width: 18vw;
+}
+
+.end {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.v-select {
+    width: 20% !important;
 }
 </style>
