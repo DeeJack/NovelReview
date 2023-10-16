@@ -8,15 +8,16 @@
                         <v-icon
                             :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn elevation="0" icon @click="deleteNovel(novel)" style="background-color: rgba(255, 255, 255, 0.5);">
+                    <v-btn elevation="0" icon @click="deleteNovel(novel)"
+                        style="background-color: rgba(255, 255, 255, 0.5);">
                         <v-icon
                             :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-trash-can</v-icon>
                     </v-btn>
                 </div>
                 <div class="center">
-                <v-img :src="novel.image" cover :style="novel.source.includes('webnovel') ? '' : 'max-width: 260px;'">
-                    <img @error="this.src = this.src" />
-                </v-img>
+                    <v-img :src="novel.image" cover :style="novel.source.includes('webnovel') ? '' : 'max-width: 260px;'">
+                        <img @error="this.src = this.src" />
+                    </v-img>
                 </div>
                 <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
                         :href="novel.url" target="_blank">{{ novel.title }}</a></v-card-title>
@@ -29,7 +30,8 @@
                     <span style="margin-left: 3px; font-size: 1rem; vertical-align:middle">({{ novel.rating }})</span>
                 </div>
                 <div style="margin: 5px 0px 0px 10px" v-if="novel.rating === 0">
-                    <v-icon v-if="novel.rating === 0" v-for="i in Array(10).keys()" style="color: brown">mdi-emoticon-poop</v-icon>
+                    <v-icon v-if="novel.rating === 0" v-for="i in Array(10).keys()"
+                        style="color: brown">mdi-emoticon-poop</v-icon>
                 </div>
                 <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
                 <v-card-text
@@ -115,24 +117,26 @@ export default {
 }
 
 .container {
-    -webkit-column-count: 4;
+    /* -webkit-column-count: 4; */
     /* Chrome, Safari, Opera */
-    -moz-column-count: 4;
+    /* -moz-column-count: 4; */
     /* Firefox */
-    column-count: 4;
-    -webkit-column-gap: .5rem;
+    /* column-count: 4; */
+    /* -webkit-column-gap: .5rem; */
     /* Chrome, Safari, Opera */
-    -moz-column-gap: .5rem;
+    /* -moz-column-gap: .5rem; */
     /* Firefox */
-    column-gap: .5rem;
-
+    /* column-gap: .5rem; */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 35px;
 }
 
 
 .note {
-    width: calc(100% / 1);
-    margin: 15px;
+    /* width: calc(100% / 1); */
+    /* margin: 15px; */
     width: fit-content;
-    max-width: 19vw;
+    max-width: 18vw;
 }
 </style>
