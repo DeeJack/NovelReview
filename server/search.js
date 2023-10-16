@@ -296,12 +296,21 @@ app.delete('/api/library/', (req, res) => {
     const url = req.body.url
 
     const deleteQuery = `DELETE FROM library WHERE url = ?`
+    const idQuery = `SELECT id FROM library WHERE url = ?`
 
-    db.run(deleteQuery, [url], (err) => {
+    db.all(idQuery, [url], (err, rows) => {
         if (err) {
             throw err;
         }
-        res.send('Successfully deleted from library')
+        const row = rows[0]
+
+        db.run(deleteQuery, [url], (err) => {
+            if (err) {
+                throw err;
+            }
+            fs.unlinkSync(`./public/images/${row.id}.png`)
+            res.send('Successfully deleted from library')
+        });
     });
 });
 
