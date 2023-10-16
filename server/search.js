@@ -8,6 +8,8 @@ const axios = require('axios')
 const cheerio = require('cheerio')
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const { Builder, By } = require('selenium-webdriver');
+
 // const natural = require('natural');
 let browser = null;
 (async () => {
@@ -16,11 +18,39 @@ let browser = null;
 
 const downloadImage = async (imageUrl, destinationPath) => {
     if (imageUrl.includes("mtlnovel.com")) {
-        let response = await axios.get(imageUrl, {
-            responseType: 'arraybuffer'
-        })
-        fs.writeFileSync(destinationPath, Buffer.from(response.data, 'binary'));
-        return
+        try {
+            let response = await axios.get(imageUrl, {
+                responseType: 'arraybuffer',
+                headers: {
+                    'Referer': 'https://www.mtlnovel.com/',
+                    'User-Agent':
+                        "'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                        "Chrome/83.0.4103.116 Safari/537.36",
+                }
+            })
+            fs.writeFileSync(destinationPath, Buffer.from(response.data, 'binary'));
+            return
+        } catch(e) {
+            console.log('Cloudflare?', e)
+            // Cloudflare detected, open browser using selenium to solve the challenge and then download the image
+            const driver = await new Builder().forBrowser('chrome').build();
+
+            try {
+                await driver.get(imageUrl);
+            
+                // Save the screenshot as an image
+                const imageBase64 = await driver.takeScreenshot();
+                const imageBuffer = Buffer.from(imageBase64, 'base64');
+                fs.writeFileSync(destinationPath, imageBuffer);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            finally {
+                await driver.quit();
+            }
+            
+            return
+        }
     }
 
     if (!browser)
@@ -175,6 +205,10 @@ app.get('/api/library', (req, res) => {
         }
         rows.forEach((row) => {
             row.image = `http://localhost:3000/images/${row.id}.png`
+
+            if (!fs.existsSync(`./public/images/${row.id}.png`)) {
+                downloadImage(row.image, `./public/images/${row.id}.png`)
+            }
         });
         res.send(rows)
     });

@@ -42,7 +42,7 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            selectedOption: 'mtlnovel',
+            selectedOption: 'webnovel',
             currentText: '',
             search: null,
             values: '',

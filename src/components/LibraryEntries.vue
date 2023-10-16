@@ -13,9 +13,11 @@
                             :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-trash-can</v-icon>
                     </v-btn>
                 </div>
-                <v-img :src="novel.image" cover>
+                <div class="center">
+                <v-img :src="novel.image" cover :style="novel.source.includes('webnovel') ? '' : 'max-width: 260px;'">
                     <img @error="this.src = this.src" />
                 </v-img>
+                </div>
                 <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
                         :href="novel.url" target="_blank">{{ novel.title }}</a></v-card-title>
                 <v-card-subtitle v-if="novel.chapter">Last read: {{ novel.chapter }}</v-card-subtitle>
@@ -90,7 +92,7 @@ export default {
         filteredLibrary() {
             return this.library.filter((novel) => {
                 return novel.title.toLowerCase().includes(this.search.toLowerCase()) ||
-                    novel.tags.toLowerCase().includes(this.search.toLowerCase()) ||
+                    (novel.tags || '').toLowerCase().includes(this.search.toLowerCase()) ||
                     novel.review.toLowerCase().includes(this.search.toLowerCase());
             })
         },
