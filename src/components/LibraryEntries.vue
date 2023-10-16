@@ -21,12 +21,15 @@
                 <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
                         :href="novel.url" target="_blank">{{ novel.title }}</a></v-card-title>
                 <v-card-subtitle v-if="novel.chapter">Last read: {{ novel.chapter }}</v-card-subtitle>
-                <div style="margin: 5px 0px 0px 10px">
+                <div style="margin: 5px 0px 0px 10px" v-if="novel.rating !== 0">
                     <v-icon :color="getColor(novel)"
                         v-for="i in [...Array(Math.floor(novel.rating || 0)).keys()]">mdi-star</v-icon>
                     <v-icon :color="getColor(novel)" v-if="Math.floor(novel.rating) < novel.rating">mdi-star-half</v-icon>
                     <v-icon v-for="i in [...Array(10 - Math.ceil(novel.rating || 0)).keys()]">mdi-star-outline</v-icon>
                     <span style="margin-left: 3px; font-size: 1rem; vertical-align:middle">({{ novel.rating }})</span>
+                </div>
+                <div style="margin: 5px 0px 0px 10px" v-if="novel.rating === 0">
+                    <v-icon v-if="novel.rating === 0" v-for="i in Array(10).keys()" style="color: brown">mdi-emoticon-poop</v-icon>
                 </div>
                 <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
                 <v-card-text
