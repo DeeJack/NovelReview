@@ -94,9 +94,9 @@ export default {
     computed: {
         filteredLibrary() {
             return this.library.filter((novel) => {
-                return novel.title.toLowerCase().includes(this.search.toLowerCase()) ||
+                return (novel.title || '').toLowerCase().includes(this.search.toLowerCase()) ||
                     (novel.tags || '').toLowerCase().includes(this.search.toLowerCase()) ||
-                    novel.review.toLowerCase().includes(this.search.toLowerCase());
+                    (novel.review || '').toLowerCase().includes(this.search.toLowerCase());
             })
         },
     },
