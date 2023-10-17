@@ -6,9 +6,12 @@
             </div>
         </Draggable>
     </Container> -->
-    <v-textarea v-model="nextReads" @update:modelValue="saveChanges" auto-grow>
+    <v-container fluid>
 
-    </v-textarea>
+        <v-textarea v-model="nextReads" @update:modelValue="saveChanges" auto-grow>
+
+        </v-textarea>
+    </v-container>
 </template>
 
 <script>
@@ -57,3 +60,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.v-textarea {
+    height: 100vh;
+}
+</style>

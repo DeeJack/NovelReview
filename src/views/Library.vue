@@ -6,7 +6,8 @@ import LibraryEntries from '../components/LibraryEntries.vue';
 <template>
     <main>
         <SearchField @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls" />
-        <LibraryEntries @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls" @update-order="updateOrder"/>
+        <LibraryEntries @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls"
+            @update-order="updateOrder" />
     </main>
 </template>
 

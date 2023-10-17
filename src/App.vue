@@ -4,8 +4,46 @@ import Library from './views/Library.vue'
 </script>
 
 <template>
+  <v-layout>
+    <v-navigation-drawer v-model="drawer" :rail="rail" @click="rail = false" style="margin-left: 0px">
+      <v-list-item title="Novel Reviewer" nav>
+        <template v-slot:append>
+          <v-btn variant="text" :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+            @click.stop="rail = !rail"></v-btn>
+        </template>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list density="compact" nav>
+        <v-list-item prepend-icon="mdi-library-shelves" title="Library" value="library" @click.stop="goToLibrary()"></v-list-item>
+        <v-list-item prepend-icon="mdi-book-arrow-right" title="Next reads" value="next" @click.stop="goToNext()"></v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+  </v-layout>
   <RouterView />
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      drawer: true,
+      rail: true,
+    }
+  },
+  methods: {
+    goToLibrary() {
+      this.rail = true
+      this.$router.push('/')
+    },
+    goToNext() {
+      this.rail = true
+      this.$router.push('/next')
+    }
+  }
+}
+</script>
 
 <style scoped>
 header {
