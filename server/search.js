@@ -176,6 +176,9 @@ const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('./library.db')
 
 
+if (!fs.existsSync('public/images')) {
+    fs.mkdirSync('public/images');
+}
 
 // Create table library if it doesn't exist
 db.run('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
@@ -346,6 +349,10 @@ cron.schedule('0 0 * * *', () => { // This will run at midnight every day
     // Delete backups older than 7 days
     const fs = require('fs');
     const directory = './backups';
+
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory);
+    }
 
     fs.readdir(directory, (err, files) => {
         if (err) throw err;
