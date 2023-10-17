@@ -14,7 +14,7 @@ const chrome = require('selenium-webdriver/chrome');
 // const natural = require('natural');
 let browser = null;
 (async () => {
-    browser = await puppeteer.launch({headless: 'new'});
+    browser = await puppeteer.launch({ headless: 'new' });
 })();
 
 const downloadImage = async (imageUrl, destinationPath) => {
@@ -41,7 +41,7 @@ const downloadImage = async (imageUrl, destinationPath) => {
             }
             fs.writeFileSync(destinationPath, Buffer.from(response.data, 'binary'));
             return
-        } catch(e) {
+        } catch (e) {
             console.log('Cloudflare?', e)
             // Cloudflare detected, open browser using selenium to solve the challenge and then download the image
             const chromeOptions = new chrome.Options();
@@ -70,13 +70,13 @@ const downloadImage = async (imageUrl, destinationPath) => {
             finally {
                 await driver.quit();
             }
-            
+
             return
         }
     }
 
     if (!browser)
-        browser = await puppeteer.launch({headless: 'new'});
+        browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
     try {
@@ -182,6 +182,11 @@ if (!fs.existsSync('public/images')) {
 
 // Create table library if it doesn't exist
 db.run('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
+// db.run('CREATE TABLE IF NOT EXISTS next (id INTEGER PRIMARY KEY, order int, title TEXT, url TEXT, comments TEXT, read BOOLEAN, image TEXT)')
+db.run('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, description TEXT)')
+try {
+    db.run('INSERT INTO nextTemp (id, description) VALUES (1, "")')
+} catch(e) {} // Already present, doesn't matter
 
 app.use(cors());
 
@@ -248,7 +253,7 @@ app.get('/api/library', (req, res) => {
             if (!fs.existsSync(`./public/images/${row.id}.png`)) {
                 downloadImage(originalImage, `./public/images/${row.id}.png`)
             }
-            
+
             row.image = `http://localhost:3000/images/${row.id}.png`
         });
         res.send(rows)
@@ -284,7 +289,7 @@ app.post('/api/library', (req, res) => {
                     throw err;
                 }
                 downloadImage(image, `./public/images/${rows[0]['id']}.png`)
-                res.send({ image: `http://localhost:3000/images/${rows[0]['id']}.png`})
+                res.send({ image: `http://localhost:3000/images/${rows[0]['id']}.png` })
             });
 
             // downloadImage(image, `./public/images/${}.png`)
@@ -329,6 +334,79 @@ app.delete('/api/library/', (req, res) => {
             fs.unlinkSync(`./public/images/${row.id}.png`)
             res.send('Successfully deleted from library')
         });
+    });
+});
+
+app.get('/api/next', (req, res) => {
+    // const selectQuery = `SELECT id, title, url, comments, image FROM next ORDER BY \`order\` ASC WHERE read = 0`
+
+    // db.all(selectQuery, [], (err, rows) => {
+    //     if (err) {
+    //         throw err;
+    //     }
+
+    //     res.send(rows)
+    // });
+    const selectQuery = 'SELECT description FROM nextTemp WHERE id = 1'
+
+    db.all(selectQuery, [], (err, rows) => {
+        if (err) {
+            throw err;
+        }
+
+        res.send(rows[0])
+    });
+});
+
+app.post('/api/next', (req, res) => {
+    const title = req.body.title
+    const url = req.body.url
+    const image = req.body.image
+
+    const insertQuery = `INSERT INTO next (title, url, image) VALUES (?, ?, ?)`
+
+    db.run(insertQuery, [title, url, image], (err) => {
+        if (err) {
+            throw err;
+        }
+        res.send('Successfully added to next')
+    });
+});
+
+app.put('/api/next', (req, res) => {
+    // const id = req.body.id
+    // const order = req.body.order
+    // const comments = req.body.comments || ''
+
+    // const updateQuery = `UPDATE next SET \`order\` = ?, comments = ? WHERE id = ?`
+
+    // db.run(updateQuery, [order, comments, id], (err) => {
+    //     if (err) {
+    //         throw err;
+    //     }
+    //     res.send('Successfully updated next')
+    // });
+    const text = req.body.text
+    const updateQuery = 'UPDATE nextTemp SET description = ? WHERE id = 1'
+
+    db.run(updateQuery, [text], (err) => {
+        if (err) {
+            throw err;
+        }
+        res.send('Successfully updated next')
+    });
+});
+
+app.delete('/api/next/', (req, res) => {
+    const id = req.body.id
+
+    const deleteQuery = `DELETE FROM next WHERE id = ?`
+
+    db.run(deleteQuery, [id], (err) => {
+        if (err) {
+            throw err;
+        }
+        res.send('Successfully deleted from next')
     });
 });
 
@@ -454,4 +532,4 @@ process.on('SIGINT', async () => {
 // console.log(jsonContent);
 
 // await browser.close();
-// return novels
+// return novel

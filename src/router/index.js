@@ -19,6 +19,15 @@ const router = createRouter({
       meta: {
         title: 'Edit Entry'
       }
+    },
+    {
+      path: '/next',
+      name: 'Next Reads',
+      params: true,
+      component: () => import('../views/NextReads.vue'),
+      meta: {
+        title: 'Next Entry'
+      }
     }
     // {
     //   path: '/about',

@@ -52,18 +52,6 @@ export default {
         }
     },
     props: ['library', 'libraryUrls'],
-    computed: {
-    },
-    created() {
-        // axios.get('http://localhost:3000/api/library')
-        //     .then((response) => {
-        //         this.library = response.data
-        //         this.libraryUrls = this.library.map((novel) => novel.url)
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //     })
-    },
     methods: {
         searchHints() {
             if (this.timer) {

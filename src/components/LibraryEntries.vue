@@ -92,17 +92,6 @@ export default {
         }
     },
     props: ['library', 'libraryUrls'],
-    created() {
-        // axios.get('http://localhost:3000/api/library')
-        //     .then((response) => {
-        //         this.library = response.data
-        //         this.libraryUrls = this.library.map((novel) => novel.url)
-        //         console.log(this.library)
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //     })
-    },
     methods: {
         getColor(novel) {
             if (novel.rating < 5)
@@ -189,5 +178,46 @@ export default {
 
 .v-select {
     width: 20% !important;
+}
+
+/** Mobile devices */
+
+@media (max-width: 767px) {
+    .container {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        row-gap: 35px;
+    }
+
+    .note {
+        /* width: calc(100% / 1); */
+        /* margin: 15px; */
+        width: fit-content;
+        max-width: 75vw;
+    }
+
+    .v-select {
+        max-width: 50% !important;
+        margin-bottom: 20px;
+    }
+}
+@media (max-width: 1250px) and (min-width: 768px) {
+    .container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 35px;
+    }
+
+    .note {
+        /* width: calc(100% / 1); */
+        /* margin: 15px; */
+        width: fit-content;
+        max-width: 35vw;
+    }
+
+    .v-select {
+        max-width: 50% !important;
+        margin-bottom: 20px;
+    }
 }
 </style>
