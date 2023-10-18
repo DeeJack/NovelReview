@@ -7,7 +7,7 @@
             <v-text-field v-model="kisses" label="Kisses"></v-text-field>
             <v-text-field v-model="tags" label="Tags (separated by comma)"></v-text-field>
 
-            <v-textarea v-model="review" label="Review"></v-textarea>
+            <v-textarea v-model="review" label="Review" auto-grow></v-textarea>
 
             <div class="center">
                 <v-btn :disabled="!valid" color="success" style="color: black" @click="save()">Save</v-btn>

@@ -2,9 +2,8 @@
     <v-container fluid>
         <v-text-field v-model="search" label="Search in library"></v-text-field>
         <div class="end">
-            <v-select v-model="order" label="Order" :items="orders" item-title="name" item-value="value"
-                hint="Order by" persistent-hint single-line style="max-width: 10%"
-                @update:modelValue="updateOrder()"></v-select>
+            <v-select v-model="order" label="Order" :items="orders" item-title="name" item-value="value" hint="Order by"
+                persistent-hint single-line style="max-width: 10%" @update:modelValue="updateOrder()"></v-select>
             <v-select v-model="direction" label="Direction" :items="directions" item-title="name" item-value="value"
                 hint="Direction" persistent-hint single-line style="max-width: 10%"
                 @update:modelValue="updateOrder()"></v-select>
@@ -41,9 +40,17 @@
                     <v-icon v-if="novel.rating === 0" v-for="i in Array(10).keys()"
                         style="color: brown">mdi-emoticon-poop</v-icon>
                 </div>
+
                 <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
-                <v-card-text
-                    v-html="novel.review ? (novel.review.replace('\n', '<br/>').substr(0, novel.image.includes('no-image') ? '1500' : '200') + '...') : 'No review yet'"></v-card-text>
+
+                <v-card-text v-if="!showMore[novel.id]" style="display:inline" v-html="getReview(novel)"></v-card-text>
+
+                <a v-if="!showMore[novel.id]" @click="toggleReview(novel)">Show more</a>
+
+                <v-card-text v-if="showMore[novel.id]" v-html="novel.review"></v-card-text>
+
+                <a v-if="showMore[novel.id]" @click="toggleReview(novel)">Show less</a>
+
                 <v-chip v-if="novel.tags" v-for="tag in novel.tags.split(',')">
                     {{ tag.trim() }}
                 </v-chip>
@@ -88,7 +95,8 @@ export default {
                     name: 'Ascending',
                     value: 1,
                 },
-            ]
+            ],
+            showMore: {}
         }
     },
     props: ['library', 'libraryUrls'],
@@ -121,6 +129,23 @@ export default {
         },
         updateOrder() {
             this.$emit('update-order', this.order, this.direction)
+        },
+        getReview(novel) {
+            if (!novel.review)
+                return 'No review yet'
+            let review = novel.review.replace('\n', '<br/>')
+            if (review.length > 200) {
+                review = review.substr(0, 200)
+                review += '...'
+            }
+            return review
+        },
+        toggleReview(novel) {
+            // The value is undefined if the novel is not in the list, so I must the it manually
+            if (!this.showMore[novel.id])
+                this.showMore[novel.id] = true
+            else
+                this.showMore[novel.id] = false
         }
     },
     computed: {
@@ -201,6 +226,7 @@ export default {
         margin-bottom: 20px;
     }
 }
+
 @media (max-width: 1250px) and (min-width: 768px) {
     .container {
         display: grid;

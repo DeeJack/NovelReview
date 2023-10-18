@@ -180,13 +180,15 @@ if (!fs.existsSync('public/images')) {
     fs.mkdirSync('public/images');
 }
 
-// Create table library if it doesn't exist
-db.run('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
-// db.run('CREATE TABLE IF NOT EXISTS next (id INTEGER PRIMARY KEY, order int, title TEXT, url TEXT, comments TEXT, read BOOLEAN, image TEXT)')
-db.run('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, description TEXT)')
-try {
-    db.run('INSERT INTO nextTemp (id, description) VALUES (1, "")')
-} catch(e) {} // Already present, doesn't matter
+(async () => {
+    try {
+        // Create table library if it doesn't exist
+        await db.run('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
+        // db.run('CREATE TABLE IF NOT EXISTS next (id INTEGER PRIMARY KEY, order int, title TEXT, url TEXT, comments TEXT, read BOOLEAN, image TEXT)')
+        await db.run('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, description TEXT)')
+        await db.run('INSERT OR IGNORE INTO nextTemp (id, description) VALUES (1, "")')
+    } catch (e) { } // Already present, doesn't matter
+})();
 
 app.use(cors());
 
