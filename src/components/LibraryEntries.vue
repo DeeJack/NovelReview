@@ -43,13 +43,17 @@
 
                 <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
 
-                <v-card-text v-if="!showMore[novel.id]" style="display:inline" v-html="getReview(novel)"></v-card-text>
+                <div class="review-container">
+                    <v-card-text v-if="!showMore[novel.id]" v-html="getReview(novel)"></v-card-text>
+                    <a class="show-more-link" v-if="!showMore[novel.id]" @click="toggleReview(novel)">Show more</a>
+                </div>
 
-                <a v-if="!showMore[novel.id]" @click="toggleReview(novel)">Show more</a>
 
-                <v-card-text v-if="showMore[novel.id]" v-html="novel.review"></v-card-text>
+                <div class="review-container">
+                    <v-card-text v-if="showMore[novel.id]" v-html="novel.review.replace('\n', '<br/>')"></v-card-text>
 
-                <a v-if="showMore[novel.id]" @click="toggleReview(novel)">Show less</a>
+                    <a class="show-more-link" v-if="showMore[novel.id]" @click="toggleReview(novel)">Show less</a>
+                </div>
 
                 <v-chip v-if="novel.tags" v-for="tag in novel.tags.split(',')">
                     {{ tag.trim() }}
@@ -203,6 +207,17 @@ export default {
 
 .v-select {
     width: 20% !important;
+}
+
+.review-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.show-more-link {
+    align-self: flex-end;
+    margin-top: 10px;
+    /* Adjust margin as needed */
 }
 
 /** Mobile devices */
