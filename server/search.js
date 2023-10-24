@@ -412,27 +412,28 @@ app.delete('/api/next/', (req, res) => {
     });
 });
 
-app.listen(3000)
+app.listen(3000, '127.0.0.1')
 
 const cron = require('node-cron')
 
 cron.schedule('0 0 * * *', () => { // This will run at midnight every day
-    db.serialize(() => {
-        db.backup(`./backups/backup-${new Date().toISOString()}.db`, (err) => {
-            if (err) {
-                return console.error(err.message);
-            }
-            console.log('Backup completed successfully.');
-        });
-    });
-
-    // Delete backups older than 7 days
-    const fs = require('fs');
     const directory = './backups';
 
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory);
     }
+    
+    // db.serialize(() => {
+    db.backup(`./backups/backup-${new Date().toISOString()}.db`, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Backup completed successfully.');
+    });
+    // });
+
+    // Delete backups older than 7 days
+    const fs = require('fs');
 
     fs.readdir(directory, (err, files) => {
         if (err) throw err;

@@ -7,13 +7,16 @@
         </Draggable>
     </Container> -->
     <v-container fluid>
-            <!-- v-on:keypress.prevent="onKeyPressed" -->
+        <!-- v-on:keypress.prevent="onKeyPressed" -->
 
-        <v-textarea v-model="nextReads" @update:modelValue="saveChanges" auto-grow
-            v-on:keyup="onKeyPressed"
-            >
+        <div style="position: relative;">
 
-        </v-textarea>
+            <v-textarea v-model="nextReads" @update:modelValue="saveChanges" auto-grow v-on:keyup="onKeyPressed">
+
+            </v-textarea>
+            <span style="position: absolute; bottom: 0; right: 0; margin: 5px; margin-bottom: 25px;" v-if="lastUpdated">Last
+                updated: {{ lastUpdated }}</span>
+        </div>
     </v-container>
 </template>
 
@@ -25,23 +28,42 @@ export default {
         return {
             nextReads: '',
             timer: null,
+            lastUpdated: '',
+            loading: false,
+            beforeUnloadHandler: (event) => {
+                if (this.loading)
+                    event.preventDefault();
+                console.log(this.loading)
+            }
         }
     },
     methods: {
         saveChanges() {
+            if (!this.loading) {
+                window.addEventListener('beforeunload', this.beforeUnloadHandler)
+            }
+
+            this.loading = true
+            this.lastUpdated = ''
+
+            
             if (this.timer) {
                 clearTimeout(this.timer)
             }
+            
             this.timer = setTimeout(() => {
-                this.currentText = this.search
-                this.items = []
                 axios.put(`http://localhost:3000/api/next`, {
                     text: this.nextReads
                 })
                     .then((response) => {
+                        this.lastUpdated = new Date().toLocaleString()
+                        this.loading = false
+                        window.removeEventListener('beforeunload', this.beforeUnloadHandler)
                     })
                     .catch((error) => {
                         console.log(error)
+                        this.loading = false
+                        window.removeEventListener('beforeunload', this.beforeUnloadHandler)
                     })
             }, 500);
         },
