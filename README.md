@@ -1,6 +1,6 @@
 # NovelReview
 
-Welcome to NovelReview, a website where you can write reviews for novels available on WebNovel and MTLnovel.
+NovelReview is a website where you can write reviews for novels available on WebNovel and MTLnovel.
 
 ## Overview
 
