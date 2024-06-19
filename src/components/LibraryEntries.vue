@@ -11,7 +11,8 @@
         <div class="container">
             <v-card v-for="novel in filteredLibrary" :key="novel.title" class="note">
                 <div style="position:absolute; top:0; right: 0; z-index: 1;">
-                    <v-btn elevation="0" icon @click="goToEdit(novel)" style="background-color: rgba(255, 255, 255, 0.5)">
+                    <v-btn elevation="0" icon @click="goToEdit(novel)"
+                        style="background-color: rgba(255, 255, 255, 0.5)">
                         <v-icon
                             :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-pencil</v-icon>
                     </v-btn>
@@ -22,7 +23,7 @@
                     </v-btn>
                 </div>
                 <div class="center">
-                    <v-img :src="novel.image" cover :style="novel.source.includes('webnovel') ? '' : 'max-width: 260px;'">
+                    <v-img class="imageThumb" :src="novel.image" cover width="auto" height="276px">
                         <img @error="this.src = this.src" />
                     </v-img>
                 </div>
@@ -32,7 +33,8 @@
                 <div style="margin: 5px 0px 0px 10px" v-if="novel.rating !== 0">
                     <v-icon :color="getColor(novel)"
                         v-for="i in [...Array(Math.floor(novel.rating || 0)).keys()]">mdi-star</v-icon>
-                    <v-icon :color="getColor(novel)" v-if="Math.floor(novel.rating) < novel.rating">mdi-star-half</v-icon>
+                    <v-icon :color="getColor(novel)"
+                        v-if="Math.floor(novel.rating) < novel.rating">mdi-star-half</v-icon>
                     <v-icon v-for="i in [...Array(10 - Math.ceil(novel.rating || 0)).keys()]">mdi-star-outline</v-icon>
                     <span style="margin-left: 3px; font-size: 1rem; vertical-align:middle">({{ novel.rating }})</span>
                 </div>
@@ -260,5 +262,18 @@ export default {
         max-width: 50% !important;
         margin-bottom: 20px;
     }
+}
+
+</style>
+
+<style>
+
+.v-img__img--cover {
+    object-fit: cover;
+    width: auto !important;
+}
+
+.imageThumb {
+    flex: inherit !important;
 }
 </style>
