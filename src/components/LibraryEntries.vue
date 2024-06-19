@@ -47,14 +47,14 @@
 
                 <div class="review-container">
                     <v-card-text v-if="!showMore[novel.id]" v-html="getReview(novel)"></v-card-text>
-                    <a class="show-more-link" v-if="!showMore[novel.id]" @click="toggleReview(novel)">Show more</a>
+                    <a class="show-more-link" v-if="!showMore[novel.id] && novel.review && novel.review.length > longReviewLength" @click="toggleReview(novel)">Show more</a>
                 </div>
 
 
                 <div class="review-container">
                     <v-card-text v-if="showMore[novel.id]" v-html="novel.review.replace('\n', '<br/>')"></v-card-text>
 
-                    <a class="show-more-link" v-if="showMore[novel.id]" @click="toggleReview(novel)">Show less</a>
+                    <a class="show-more-link" v-if="showMore[novel.id] && novel.review.length > longReviewLength" @click="toggleReview(novel)">Show less</a>
                 </div>
 
                 <v-chip v-if="novel.tags" v-for="tag in novel.tags.split(',')">
@@ -102,7 +102,8 @@ export default {
                     value: 1,
                 },
             ],
-            showMore: {}
+            showMore: {},
+            longReviewLength: 200,
         }
     },
     props: ['library', 'libraryUrls'],
@@ -140,18 +141,15 @@ export default {
             if (!novel.review)
                 return 'No review yet'
             let review = novel.review.replace('\n', '<br/>')
-            if (review.length > 200) {
-                review = review.substr(0, 200)
+            if (review.length > this.longReviewLength) {
+                review = review.substr(0, this.longReviewLength)
                 review += '...'
             }
             return review
         },
         toggleReview(novel) {
             // The value is undefined if the novel is not in the list, so I must the it manually
-            if (!this.showMore[novel.id])
-                this.showMore[novel.id] = true
-            else
-                this.showMore[novel.id] = false
+            this.showMore[novel.id] = !(this.showMore[novel.id] === true)
         }
     },
     computed: {
