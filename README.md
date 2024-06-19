@@ -11,6 +11,17 @@ NovelReview offers several features:
 - Provide details like the last chapter read, tags, and your review
 - Search and sort your library based on title, tags, and description
 
+## Changes in version 0.1
+
+- Separated the backend in different files for clarity
+- Migrated to TypeScript the backend
+- Fixed a few minor bugs (height of images in library, "show more" button)
+
+## TODO
+
+- Add support for movies
+- Add support for anime
+
 ## Prerequisites
 
 - NodeJS
