@@ -22,7 +22,7 @@ const IMAGE_PATH = './public/images'
 export async function init() {
     try {
         // Create table library if it doesn't exist
-        await runQueryAsync('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, kisses TEXT, tags TEXT, added_at datetime default current_timestamp)')
+        await runQueryAsync('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, notes TEXT, tags TEXT, added_at datetime default current_timestamp)')
         // db.run('CREATE TABLE IF NOT EXISTS next (id INTEGER PRIMARY KEY, order int, title TEXT, url TEXT, comments TEXT, read BOOLEAN, image TEXT)')
         await runQueryAsync('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, description TEXT)')
         await runQueryAsync('INSERT OR IGNORE INTO nextTemp (id, description) VALUES (1, "")')
@@ -134,7 +134,7 @@ export async function getLibrary(orderBy: string, direction: string): Promise<No
     if (direction === '1')
         directionString = 'ASC'
 
-    const selectQuery = `SELECT id, title, url, image, source, rating, review, chapter, kisses, tags FROM library ORDER BY ${order} ${directionString}`
+    const selectQuery = `SELECT id, title, url, image, source, rating, review, chapter, notes, tags FROM library ORDER BY ${order} ${directionString}`
 
     /**
      * Download the images for all the novels found, if they weren't downloaded already
@@ -186,11 +186,11 @@ export async function saveReview(url: string, title: string, image: string, sour
 /**
  * Modifies a novel in the library
  */
-export async function updateNovel(rating: number, review: string, chapter: number, kisses: string, tags: string, url: string) {
-    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, kisses = ?, tags = ? WHERE url = ?`
+export async function updateNovel(url: string, rating: number, review: string, chapter: number, notes: string, tags: string) {
+    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, notes = ?, tags = ? WHERE url = ?`
 
     try {
-        await runQueryAsync(updateQuery, [rating, review, chapter, kisses, tags, url]);
+        await runQueryAsync(updateQuery, [rating, review, chapter, notes, tags, url]);
     } catch (e) {
         throw e;
     }

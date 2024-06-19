@@ -32,9 +32,9 @@ export class Novel {
      */
     chapter?: number;
     /**
-     * Chapters with kisses (separated by comma)
+     * Notes
      */
-    kisses?: string;
+    notes?: string;
     /**
      * Tags for the novel (separated by comma)
      */

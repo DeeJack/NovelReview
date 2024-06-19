@@ -23,8 +23,7 @@
                     </v-btn>
                 </div>
                 <div class="center">
-                    <v-img class="imageThumb" :src="novel.image" cover width="auto" height="276px">
-                        <img @error="this.src = this.src" />
+                    <v-img class="imageThumb" :src="novel.image" @error="this.src = this.src" cover width="auto" height="276px">
                     </v-img>
                 </div>
                 <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
@@ -43,7 +42,7 @@
                         style="color: brown">mdi-emoticon-poop</v-icon>
                 </div>
 
-                <v-card-text v-if="novel.kisses">Kisses: {{ novel.kisses }}</v-card-text>
+                <v-card-subtitle  v-if="novel.notes">Notes: {{ novel.notes }}</v-card-subtitle>
 
                 <div class="review-container">
                     <v-card-text v-if="!showMore[novel.id]" v-html="getReview(novel)"></v-card-text>
