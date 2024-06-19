@@ -217,7 +217,7 @@ export default {
 .show-more-link {
     align-self: flex-end;
     margin-top: 10px;
-    /* Adjust margin as needed */
+    cursor: pointer;
 }
 
 /** Mobile devices */
