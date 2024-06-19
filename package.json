@@ -6,9 +6,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "nodemon server/search.js"
+    "server": "nodemon server/Server.ts"
   },
   "dependencies": {
+    "@types/express": "^4.17.21",
+    "@types/sqlite3": "^3.1.11",
     "axios": "^1.7.2",
     "cheerio": "^1.0.0-rc.12",
     "chromedriver": "^123.0.4",
@@ -27,7 +29,11 @@
     "vuetify": "^3.6.9"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/node-cron": "^3.0.11",
+    "@types/selenium-webdriver": "^4.1.23",
     "@vitejs/plugin-vue": "^4.6.2",
+    "typescript": "^5.4.5",
     "vite": "^4.5.3"
   }
 }

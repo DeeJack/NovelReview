@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowJs": true, // This allows TypeScript to compile JavaScript files
+        "checkJs": false, // This disables type-checking for JavaScript files
+        "outDir": "./dist", // This is where the compiled JavaScript will be output
+        "target": "es5" // This is the JavaScript version that the TypeScript code will be compiled to
+    },
+    "include": [
+        "server/**/*"
+    ], // This tells TypeScript to include all files in the src directory
+    "exclude": [
+        "node_modules",
+        "src"
+    ] // This tells TypeScript to exclude the node_modules directory
+}
