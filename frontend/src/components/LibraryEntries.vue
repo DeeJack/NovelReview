@@ -276,8 +276,6 @@ export default {
 <style>
 .v-img__img--cover {
     object-fit: cover;
-    object-position: 74% 0px;
-    width: 110% !important;
 }
 
 .imageThumb {
@@ -294,6 +292,12 @@ export default {
     .end {
         display: block !important;
         margin-bottom: 10px !important;
+    }
+
+    .v-img__img--cover {
+        object-fit: cover;
+        object-position: 74% 0px;
+        width: 110% !important;
     }
 }
 </style>
