@@ -113,7 +113,6 @@ export class MTLNovel implements Source {
             const $ = cheerio.load(html as string);
             const resultBooksContainer = $('pre');
             const jsonText = $(resultBooksContainer[0]).text().trim();
-            console.log(jsonText)
             return jsonText;
         } catch (error) {
             return '';
