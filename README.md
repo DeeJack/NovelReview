@@ -21,11 +21,11 @@ NovelReview offers several features:
 
 - [ ] Add support for movies
 - [ ] Add support for anime
-- [ ] Use Docker
+- [ ] Use Docker: dropped. It gave a lot of problems with puppeteer. It's not worth it.
 - [ ] Show loading animation when loading the edit page
 - [ ] Show images when showing WebNovel
 - [ ] Try with browser if search fail with axios
-- [ ] Fix adding to the library somehow not working (replaced the last novel with the new one/not added at all)
+- [x] Fix adding to the library somehow not working (replaced the last novel with the new one/not added at all)
 
 ## Prerequisites
 
@@ -36,8 +36,9 @@ NovelReview offers several features:
 To get started:
 
 1. Clone the repository: `git clone https://github.com/DeeJack/NovelReview`
-2. Run the server: `npm run server`
-3. Run the frontend: `npm run dev`
+2. Run the server in the backend directory: `npm run dev`
+3. Run the frontend in the frontend directory: `npm run dev`
+4. [Optional]: use make to run them: `make frontend[/backend]`
 
 Once done, access the frontend from `http://localhost:5173/` (by default).
 
