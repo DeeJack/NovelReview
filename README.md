@@ -17,10 +17,15 @@ NovelReview offers several features:
 - Migrated to TypeScript the backend
 - Fixed a few minor bugs (height of images in library, "show more" button)
 
-## TODO
+## TO DO
 
-- Add support for movies
-- Add support for anime
+- [ ] Add support for movies
+- [ ] Add support for anime
+- [ ] Use Docker
+- [ ] Show loading animation when loading the edit page
+- [ ] Show images when showing WebNovel
+- [ ] Try with browser if search fail with axios
+- [ ] Fix adding to the library somehow not working (replaced the last novel with the new one/not added at all)
 
 ## Prerequisites
 

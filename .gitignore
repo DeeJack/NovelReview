@@ -162,4 +162,5 @@ coverage
 *.db
 backups/
 backups/*
-public/images/*
+backend/public/images/*
+data/*

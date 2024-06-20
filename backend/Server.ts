@@ -6,10 +6,10 @@ import { Request, Response, NextFunction } from 'express'
 import { getMTLNovelSource, getWebNovelSource, sources } from './sources/SourceUtils';
 import * as cron from 'node-cron';
 
-import fs = require('fs');
-import express = require('express');
+import fs from 'fs';
+import express from 'express';
 const app = express();
-import cors = require('cors');
+import cors from 'cors';
 
 /**
  * Create the image folder
@@ -47,6 +47,9 @@ app.get('/search', (req: Request, res: Response) => {
             const searchResults = values.reduce((acc, val) => acc.concat(val), [])
 
             res.send(searchResults)
+        })
+        .catch((err) => {
+            res.send('Error searching for novels')
         });
 });
 
@@ -58,6 +61,9 @@ app.get('/api/mtlnovel/search', (req: Request, res: Response) => {
     getMTLNovelSource().search(query.toString())
         .then(function (results) {
             res.send(results)
+        })
+        .catch((err) => {
+            res.send('Error searching for novels')
         });
 });
 
@@ -69,6 +75,9 @@ app.get('/api/webnovel/search', (req: Request, res: Response) => {
     getWebNovelSource().search(query.toString())
         .then(function (results) {
             res.send(results)
+        })
+        .catch((err) => {
+            res.send('Error searching for novels')
         });
 });
 

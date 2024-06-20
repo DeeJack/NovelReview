@@ -3,13 +3,13 @@
  */
 import * as sqlite3 from 'sqlite3'
 import * as fs from 'fs';
-import { Novel } from './Novel';
+import { Novel } from './models/Novel';
 import { getSourceFromURL, sources } from './sources/SourceUtils';
 import * as path from 'path';
 /**
  * Instance for the SQLite database
  */
-const db = new sqlite3.Database('./library.db')
+const db = new sqlite3.Database('../data/library.db')
 const IMAGE_PATH = './public/images'
 
 /**
@@ -36,7 +36,7 @@ export async function init() {
  */
 async function selectAllAsync<T>(query: string, params?: any[]) {
     return new Promise<T[]>(function (resolve, reject) {
-        db.all<T>(query, params, function (err, rows: T[]) {
+        db.all(query, params, function (err, rows: T[]) {
             if (err) { return reject(err); }
             resolve(rows);
         });

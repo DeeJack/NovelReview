@@ -1,9 +1,9 @@
-import { Novel } from "../Novel";
+import { Novel } from "../models/Novel";
 import { Source } from "./Source";
-import puppeteer = require('puppeteer');
-import fs = require('fs');
+import { launch } from "puppeteer";
+import fs from 'fs';
 import axios from 'axios';
-import cheerio = require('cheerio');
+import * as cheerio from 'cheerio';
 
 export class WebNovel implements Source {
     browser = null;
@@ -15,7 +15,7 @@ export class WebNovel implements Source {
      */
     async downloadImage(imageUrl: string, destinationPath: string) {
         if (!this.browser) {
-            this.browser = await puppeteer.launch({ headless: true });
+            this.browser = await launch({ headless: true });
 
         }
         const page = await this.browser.newPage();
@@ -34,7 +34,7 @@ export class WebNovel implements Source {
         const response = await axios.get(url);
         let novels = [];
         const html = response.data;
-        const $ = cheerio.load(html);
+        const $ = cheerio.load(html as string);
         const resultBooksContainer = $('div.result-books-container > script');
         const jsonText = $(resultBooksContainer[0]).text().trim();
         if (jsonText === '') {

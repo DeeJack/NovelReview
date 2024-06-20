@@ -1,4 +1,4 @@
-import { Novel } from "../Novel";
+import { Novel } from "../models/Novel";
 
 export interface Source {
     /**

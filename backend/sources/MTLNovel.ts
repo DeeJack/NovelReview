@@ -1,4 +1,4 @@
-import { Novel } from "../Novel";
+import { Novel } from "../models/Novel";
 import { Source } from "./Source";
 import axios from 'axios';
 import * as fs from 'fs';
@@ -36,14 +36,14 @@ export class MTLNovel implements Source {
         if (response.status !== 200) {
             throw new Error('Response status was not 200')
         }
-        if (response.data.length === 0) {
+        if ((response.data as any[]).length === 0) {
             if (!imageUrl.endsWith('.webp')) {
                 return this.downloadImage(imageUrl + '.webp', destinationPath)
             }
             else
                 throw new Error('Response data was empty')
         }
-        fs.writeFileSync(destinationPath, Buffer.from(response.data, 'binary'));
+        fs.writeFileSync(destinationPath, Buffer.from((response.data as string), 'binary'));
     }
 
     /**
@@ -90,7 +90,6 @@ export class MTLNovel implements Source {
             const res = await axios.get(searchUrl, { headers: HEADERS });
             results = res.data;
         } catch (e) {
-            console.log(e);
             return [];
         }
         let novels: Novel[] = []
