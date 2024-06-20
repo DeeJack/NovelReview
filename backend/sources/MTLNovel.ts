@@ -4,6 +4,8 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as webdriver from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
+import { launch } from "puppeteer";
+import * as cheerio from 'cheerio';
 
 const HEADERS = {
     'Referer': 'https://www.webnovel.com/',
@@ -54,31 +56,17 @@ export class MTLNovel implements Source {
      */
     async downloadWithPuppeteer(imageUrl: string, destinationPath: string) {
         // Cloudflare detected, open browser using selenium to solve the challenge and then download the image
-        const chromeOptions = new chrome.Options();
-        chromeOptions.addArguments('--disable-notifications');
-        chromeOptions.addArguments('--window-size=1920,1080');
-
-        // Initialize WebDriver using Chrome
-        const driver = new webdriver.Builder()
-            .forBrowser('chrome')
-            .setChromeOptions(chromeOptions)
-            .build();
+        let browser = await launch({ headless: false });
+        const page = await browser.newPage();
 
         try {
-            await driver.get(imageUrl);
-            await driver.sleep(5000);
-            // Save the screenshot as an image
-            const cookies = await driver.manage().getCookies();
-            const formattedCookies = cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
-            axios.defaults.headers.common['Cookie'] = formattedCookies;
-            const imageBase64 = await driver.takeScreenshot();
-            const imageBuffer = Buffer.from(imageBase64, 'base64');
+            await page.goto(imageUrl, { waitUntil: 'networkidle2' });
+            const imageBuffer = await page.screenshot();
             fs.writeFileSync(destinationPath, imageBuffer);
         } catch (error) {
             console.error('Error:', error);
-        }
-        finally {
-            await driver.quit();
+        } finally {
+            await browser.close();
         }
     }
 
@@ -90,6 +78,9 @@ export class MTLNovel implements Source {
             const res = await axios.get(searchUrl, { headers: HEADERS });
             results = res.data;
         } catch (e) {
+            results = JSON.parse(await this.searchWithPuppeteer(keywords));
+        }
+        if (!results.items || results.items.length === 0) {
             return [];
         }
         let novels: Novel[] = []
@@ -105,5 +96,29 @@ export class MTLNovel implements Source {
             })
         }
         return novels
+    }
+
+    /**
+     * Search for novels using Puppeteer, which is slower and more complex.
+     * Returns the json response from the search
+     */
+    async searchWithPuppeteer(keywords: string): Promise<string> {
+        const searchUrl = `https://www.mtlnovel.com/wp-admin/admin-ajax.php?action=autosuggest&q=${keywords}&__amp_source_origin=https%3A%2F%2Fwww.mtlnovel.com`;
+        let browser = await launch({ headless: false });
+        const page = await browser.newPage();
+
+        try {
+            await page.goto(searchUrl, { waitUntil: 'networkidle2' });
+            const html = await page.evaluate(() => document.body.innerHTML);
+            const $ = cheerio.load(html as string);
+            const resultBooksContainer = $('pre');
+            const jsonText = $(resultBooksContainer[0]).text().trim();
+            console.log(jsonText)
+            return jsonText;
+        } catch (error) {
+            return '';
+        } finally {
+            await browser.close();
+        }
     }
 }

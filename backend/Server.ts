@@ -187,7 +187,6 @@ cron.schedule('0 0 * * *', () => { // This will run at midnight every day
 process.on('SIGINT', async () => {
     console.log('Closing database connection...');
     close();
-    getWebNovelSource().closeBrowser();
     process.exit();
 });
 
