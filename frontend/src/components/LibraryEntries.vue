@@ -243,6 +243,11 @@ export default {
         max-width: 50% !important;
         margin-bottom: 20px;
     }
+
+    .end div.v-select {
+        width: 100%;
+        display: block;
+    }
 }
 
 @media (max-width: 1250px) and (min-width: 768px) {
@@ -274,5 +279,18 @@ export default {
 
 .imageThumb {
     flex: inherit !important;
+}
+
+
+@media (max-width: 767px) {
+    .end div.v-select {
+        width: 100%;    
+        display: contents;
+    }
+
+    .end {
+        display: block;
+        margin-bottom: 10px;
+    }
 }
 </style>
