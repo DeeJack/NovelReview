@@ -12,7 +12,7 @@
             <v-card v-for="novel in filteredLibrary" :key="novel.title" class="note">
                 <div style="position:absolute; top:0; right: 0; z-index: 1;">
                     <v-btn elevation="0" icon @click="goToEdit(novel)"
-                        style="background-color: rgba(255, 255, 255, 0.5)">
+                        style="background-color: rgba(255, 255, 255, 0.5); margin-right: 4px;">
                         <v-icon
                             :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-pencil</v-icon>
                     </v-btn>
@@ -22,9 +22,9 @@
                             :style="novel.image.includes('no-image') ? 'color: white' : 'color: black'">mdi-trash-can</v-icon>
                     </v-btn>
                 </div>
-                <div class="center">
-                    <v-img class="imageThumb" lazy-src="http://127.0.0.1:3000/images/noimage.png" :src="novel.image" @load="imageLoaded = true" @error="this.src = this.src"
-                        cover width="auto" height="276px"
+                <div class="center" style="background: black;">
+                    <v-img class="imageThumb" lazy-src="http://127.0.0.1:3000/images/noimage.png" :src="novel.image"
+                        @load="imageLoaded = true" @error="this.src = this.src" cover width="auto" height="276px"
                         :style="novel.source.includes('webnovel') ? 'object-fit: cover' : ''">
 
                         <template v-slot:placeholder>
@@ -33,12 +33,8 @@
                             </div>
                         </template>
                         <template v-slot:error>
-                        <v-img
-                            class="mx-auto"
-                            height="300"
-                            max-width="500" 
-                            src="http://127.0.0.1:3000/images/noimage.png"
-                        ></v-img>
+                            <v-img class="mx-auto" height="300" max-width="500"
+                                src="http://127.0.0.1:3000/images/noimage.png"></v-img>
                         </template>
                     </v-img>
                 </div>
@@ -294,6 +290,11 @@ export default {
 
 .imageThumb {
     flex: inherit !important;
+}
+
+.v-btn--icon.v-btn--density-default {
+    width: calc(var(--v-btn-height) + 7px) !important;
+    height: calc(var(--v-btn-height) + 7px) !important;
 }
 
 
