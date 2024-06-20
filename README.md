@@ -23,7 +23,7 @@ NovelReview offers several features:
 - [ ] Add support for anime
 - [x] Use Docker: dropped. It gave a lot of problems with puppeteer. It's not worth it.
 - [ ] Show loading animation when loading the edit page
-- [ ] Show images when showing WebNovel: doesn't work. I can save the images temporarily, based on the hash of the URL.
+- [x] Show images when showing WebNovel: doesn't work. I can save the images temporarily, based on the hash of the URL. It's not worth it, a lot of requests made, and pages opened, for temporary results.
 - [x] Try with browser if search fail with axios
 - [x] Fix adding to the library somehow not working (replaced the last novel with the new one/not added at all)
 
