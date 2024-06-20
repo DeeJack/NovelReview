@@ -1,10 +1,10 @@
 <template>
     <v-container class="top" fluid px-0>
         <v-radio-group v-model="selectedOption" row>
-            <v-radio :class="selectedOption === 'webnovel' ? 'active' : 'boh'" label="Webnovel" value="webnovel" off-icon=""
-                on-icon=""></v-radio>
-            <v-radio :class="selectedOption === 'mtlnovel' ? 'active' : 'boh'" label="MTLNovel" value="mtlnovel" off-icon=""
-                on-icon=""></v-radio>
+            <v-radio :class="selectedOption === 'webnovel' ? 'active' : 'boh'" label="Webnovel" value="webnovel"
+                off-icon="" on-icon=""></v-radio>
+            <v-radio :class="selectedOption === 'mtlnovel' ? 'active' : 'boh'" label="MTLNovel" value="mtlnovel"
+                off-icon="" on-icon=""></v-radio>
             <!-- Add more options here -->
         </v-radio-group>
         <v-combobox label="Search novels" :items="items" v-model:search="search" persistent-hint :hide-no-data="false"
@@ -12,7 +12,8 @@
             <template #item="{ item }">
                 <v-list-item ripple class="result"> <!--  @click="select(item)" -->
                     <!-- <img :src="item.raw.image" :alt="item.raw.image" /> -->
-                    <v-img :src="item.raw.image.includes('webnovel.com') ? '' : item.raw.image" :alt="item.raw.image" width="40" height="60"></v-img>
+                    <v-img :src="item.raw.image.includes('webnovel.com') ? '' : item.raw.image" :alt="item.raw.image"
+                        width="40" height="60"></v-img>
                     <a :href="item.raw.url" target="_blank">
                         <v-list-item-title v-html="item.title"></v-list-item-title>
                     </a>
@@ -84,42 +85,38 @@ export default {
                 novel.title = novel.title.replace('<strong>', '').replace('</strong>', '')
 
             if (added) {
-                return await axios.post('http://localhost:3000/api/library', {
+                let updatedLibrary = [novel, ...this.library]
+                this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
+                axios.post('http://localhost:3000/api/library', {
                     title: novel.title,
                     url: novel.url,
                     image: novel.image,
                     source: this.selectedOption
                 })
                     .then((response) => {
-                        // this.libraryUrls.push(novel.url)
                         novel.image = response.data.image
-                        let updatedLibrary = [novel, ...this.library]
-                        this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
                     })
                     .catch((error) => {
                         console.log(error)
                     })
-            } else {
-                return await axios.delete(`http://localhost:3000/api/library/`, {
-                    data: {
-                        url: novel.url
-                    }
-                })
-                    .then((response) => {
-                        let updatedLibrary = this.library
-                        updatedLibrary = updatedLibrary.filter((item) => item.url !== novel.url)
-                        this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
+                return;
             }
+            let updatedLibrary = this.library
+            updatedLibrary = updatedLibrary.filter((item) => item.url !== novel.url)
+            this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
+            axios.delete(`http://localhost:3000/api/library/`, {
+                data: {
+                    url: novel.url
+                }
+            })
+                .catch((error) => {
+                    console.log(error)
+                })
         },
         addAndEdit(novel) {
-            this.handleButtonClick(novel).then(_ => {
-                localStorage.setItem('novel', JSON.stringify(novel))
-                this.$router.push({ name: 'Edit' })
-            })
+            this.handleButtonClick(novel)
+            localStorage.setItem('novel', JSON.stringify(novel))
+            this.$router.push({ name: 'Edit' })
         }
     },
     watch: {
