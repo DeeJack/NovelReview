@@ -23,7 +23,8 @@
                     </v-btn>
                 </div>
                 <div class="center">
-                    <v-img class="imageThumb" :src="novel.image" @error="this.src = this.src" cover width="auto" height="276px">
+                    <v-img class="imageThumb" :src="novel.image" @error="this.src = this.src" cover width="auto"
+                        height="276px">
                     </v-img>
                 </div>
                 <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
@@ -42,18 +43,21 @@
                         style="color: brown">mdi-emoticon-poop</v-icon>
                 </div>
 
-                <v-card-subtitle  v-if="novel.notes">Notes: {{ novel.notes }}</v-card-subtitle>
+                <v-card-subtitle v-if="novel.notes">Notes: {{ novel.notes }}</v-card-subtitle>
 
                 <div class="review-container">
                     <v-card-text v-if="!showMore[novel.id]" v-html="getReview(novel)"></v-card-text>
-                    <a class="show-more-link" v-if="!showMore[novel.id] && novel.review && novel.review.length > longReviewLength" @click="toggleReview(novel)">Show more</a>
+                    <a class="show-more-link"
+                        v-if="!showMore[novel.id] && novel.review && novel.review.length > longReviewLength"
+                        @click="toggleReview(novel)">Show more</a>
                 </div>
 
 
                 <div class="review-container">
                     <v-card-text v-if="showMore[novel.id]" v-html="novel.review.replace('\n', '<br/>')"></v-card-text>
 
-                    <a class="show-more-link" v-if="showMore[novel.id] && novel.review.length > longReviewLength" @click="toggleReview(novel)">Show less</a>
+                    <a class="show-more-link" v-if="showMore[novel.id] && novel.review.length > longReviewLength"
+                        @click="toggleReview(novel)">Show less</a>
                 </div>
 
                 <v-chip v-if="novel.tags" v-for="tag in novel.tags.split(',')">
@@ -194,7 +198,7 @@ export default {
 .note {
     /* width: calc(100% / 1); */
     /* margin: 15px; */
-    width: fit-content;
+    /* width: fit-content; */
     max-width: 18vw;
 }
 
@@ -231,7 +235,7 @@ export default {
     .note {
         /* width: calc(100% / 1); */
         /* margin: 15px; */
-        width: fit-content;
+        /* width: fit-content;*/
         max-width: 75vw;
     }
 
@@ -251,7 +255,7 @@ export default {
     .note {
         /* width: calc(100% / 1); */
         /* margin: 15px; */
-        width: fit-content;
+        /*width: fit-content;*/
         max-width: 35vw;
     }
 
@@ -260,11 +264,9 @@ export default {
         margin-bottom: 20px;
     }
 }
-
 </style>
 
 <style>
-
 .v-img__img--cover {
     object-fit: cover;
     width: auto !important;
