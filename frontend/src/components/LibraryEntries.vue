@@ -23,8 +23,10 @@
                     </v-btn>
                 </div>
                 <div class="center">
-                    <v-img class="imageThumb" :src="novel.image" @error="this.src = this.src" cover width="auto"
-                        height="276px">
+                    <v-img class="imageThumb" :src="novel.image" 
+                        @error="this.src = this.src" cover width="auto"
+                        height="276px"
+                        :style="novel.source.includes('webnovel') ? 'object-fit: cover' : ''">
                     </v-img>
                 </div>
                 <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
@@ -274,7 +276,8 @@ export default {
 <style>
 .v-img__img--cover {
     object-fit: cover;
-    width: auto !important;
+    object-position: 74% 0px;
+    width: 110% !important;
 }
 
 .imageThumb {
@@ -284,13 +287,13 @@ export default {
 
 @media (max-width: 767px) {
     .end div.v-select {
-        width: 100%;    
-        display: contents;
+        width: 100% !important;    
+        display: contents !important;
     }
 
     .end {
-        display: block;
-        margin-bottom: 10px;
+        display: block !important;
+        margin-bottom: 10px !important;
     }
 }
 </style>
