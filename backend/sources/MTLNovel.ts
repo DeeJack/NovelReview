@@ -2,8 +2,6 @@ import { Novel } from "../models/Novel";
 import { Source } from "./Source";
 import axios from 'axios';
 import * as fs from 'fs';
-import * as webdriver from 'selenium-webdriver';
-import * as chrome from 'selenium-webdriver/chrome';
 import { launch } from "puppeteer";
 import * as cheerio from 'cheerio';
 
