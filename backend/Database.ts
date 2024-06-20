@@ -186,11 +186,11 @@ export async function saveReview(url: string, title: string, image: string, sour
 /**
  * Modifies a novel in the library
  */
-export async function updateNovel(url: string, rating: number, review: string, chapter: number, notes: string, tags: string) {
-    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, notes = ?, tags = ? WHERE url = ?`
+export async function updateNovel(url: string, title: string, rating: number, review: string, chapter: number, notes: string, tags: string) {
+    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, notes = ?, tags = ?, title = ? WHERE url = ?`
 
     try {
-        await runQueryAsync(updateQuery, [rating, review, chapter, notes, tags, url]);
+        await runQueryAsync(updateQuery, [rating, review, chapter, notes, tags, title, url]);
     } catch (e) {
         throw e;
     }

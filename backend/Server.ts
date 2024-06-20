@@ -122,8 +122,9 @@ app.put('/api/library', async (req: Request, res: Response) => {
     const notes = req.body.notes
     const tags = req.body.tags
     const url = req.body.url
+    const title = req.body.title
 
-    updateNovel(url, rating, review, chapter, notes, tags)
+    updateNovel(url, title, rating, review, chapter, notes, tags)
         .then(() => res.send('Successfully updated library'))
         .catch(() => res.send('Error updating library'))
 });
