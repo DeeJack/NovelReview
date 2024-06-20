@@ -44,9 +44,9 @@ Once done, access the frontend from `http://localhost:5173/` (by default).
 
 ## Screenshots
 
-![Library](images/library.png)
+![Library](readme/images/library.png)
 
-![Search results](images/search.png)
+![Search results](readme/images/search.png)
 
 ## License
 
