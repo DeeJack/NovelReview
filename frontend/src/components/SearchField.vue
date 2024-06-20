@@ -34,6 +34,15 @@
                     </v-list-item-title>
                 </v-list-item>
             </template>
+            <template #prepend-item>
+                <v-progress-linear
+                    v-if="loading"
+                    color="deep-purple-accent-4"
+                    height="6"
+                    indeterminate
+                    rounded
+                ></v-progress-linear>
+            </template>
         </v-combobox>
         <!-- <v-autocomplete v-model="values" :items="items" label="Default" density="comfortable"></v-autocomplete> -->
     </v-container>
@@ -50,11 +59,13 @@ export default {
             items: [],
             buttonIcon: 'mdi-plus',
             buttonColor: 'primary',
+            loading: false,
         }
     },
     props: ['library', 'libraryUrls'],
     methods: {
         searchHints() {
+            this.loading = true
             if (this.timer) {
                 clearTimeout(this.timer)
             }
@@ -65,13 +76,16 @@ export default {
                     axios.get(`http://localhost:3000/api/${this.selectedOption}/search?query=${this.search}`)
                         .then((response) => {
                             this.items = response.data
+                            this.loading = false
                         })
                         .catch((error) => {
                             console.log(error)
+                            this.loading = false
                         })
                 }, 1000);
             } else {
                 this.items = []
+                this.loading = false
             }
         },
         async handleButtonClick(novel) {
