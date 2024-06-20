@@ -23,7 +23,7 @@
                     </v-btn>
                 </div>
                 <div class="center">
-                    <v-img class="imageThumb" lazy-src="127.0.0.1:3000/images/noimage.png" :src="novel.image" @load="imageLoaded = true" @error="this.src = this.src"
+                    <v-img class="imageThumb" lazy-src="http://127.0.0.1:3000/images/noimage.png" :src="novel.image" @load="imageLoaded = true" @error="this.src = this.src"
                         cover width="auto" height="276px"
                         :style="novel.source.includes('webnovel') ? 'object-fit: cover' : ''">
 
@@ -32,13 +32,15 @@
                                 <v-progress-circular color="grey-lighten-4" indeterminate></v-progress-circular>
                             </div>
                         </template>
+                        <template v-slot:error>
+                        <v-img
+                            class="mx-auto"
+                            height="300"
+                            max-width="500" 
+                            src="http://127.0.0.1:3000/images/noimage.png"
+                        ></v-img>
+                        </template>
                     </v-img>
-                    <!-- <v-progress-circular indeterminate></v-progress-circular>
-                    <v-img class="imageThumb" :src="novel.image" 
-                        @error="this.src = this.src" cover width="auto"
-                        height="276px"
-                        :style="novel.source.includes('webnovel') ? 'object-fit: cover' : ''">
-                    </v-img> -->
                 </div>
                 <v-card-title :title="novel.title" :style="novel.image.includes('no-image') ? 'width: 80%' : ''"><a
                         :href="novel.url" target="_blank">{{ novel.title }}</a></v-card-title>
