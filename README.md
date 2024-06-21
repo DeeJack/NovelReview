@@ -61,9 +61,13 @@ Then, if you are using a computer that doesn't have a display (probably a VPS), 
 
 ## Screenshots
 
-![Library](readme/images/library.png)
+| Library pc                            | Search pc                            |
+| ----------------------                | ----------------------               |
+| ![Library](readme/images/library.png) | ![Search](readme/images/search.png) |
 
-![Search results](readme/images/search.png)
+| Library phone                          | Search phone                        |
+| ----------------------                 | ----------------------              |
+| ![Library](readme/images/mobile.png)   | ![Search](readme/images/mobile2.png) |
 
 ## License
 
