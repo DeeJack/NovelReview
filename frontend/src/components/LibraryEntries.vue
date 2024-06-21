@@ -10,7 +10,7 @@
         </div>
         <div class="container">
             <v-card v-for="novel in filteredLibrary" :key="novel.title" class="note">
-                <div style="position:absolute; top:0; right: 0; z-index: 1;">
+                <div class="editContainer" style="position:absolute; top:0; right: 0; z-index: 1;">
                     <v-btn elevation="0" icon @click="goToEdit(novel)"
                         style="background-color: rgba(255, 255, 255, 0.5); margin-right: 4px;">
                         <v-icon
@@ -315,6 +315,11 @@ export default {
         object-fit: cover;
         object-position: 74% 0px;
         width: 110% !important;
+    }
+
+    .editContainer {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
     }
 }
 </style>
