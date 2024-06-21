@@ -7,17 +7,14 @@ import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 
 export class WebNovel implements Source {
-    browser = null;
-
     /**
      * Takes a screenshot of the page and saves it as an image
      * @param imageUrl The DIRECT URL of the image to download
      * @param destinationPath The path to save the image to
      */
     async downloadImage(imageUrl: string, destinationPath: string) {
-        if (!this.browser)
-            this.browser = await launch({ headless: true });
-        const page = await this.browser.newPage();
+        let browser = await launch({ headless: true });
+        const page = await browser.newPage();
 
         try {
             await page.goto(imageUrl, { waitUntil: 'networkidle2' });
@@ -26,7 +23,7 @@ export class WebNovel implements Source {
         } catch (error) {
             console.error('Error:', error);
         } finally {
-            await page.close();
+            await browser.close();
         }
     }
 
@@ -57,10 +54,5 @@ export class WebNovel implements Source {
             });
         }
         return novels;
-    }
-
-    closeBrowser() {
-        if (this.browser)
-            this.browser.close();
     }
 }
