@@ -5,8 +5,10 @@ import LibraryEntries from '../components/LibraryEntries.vue';
 </script>
 <template>
     <main>
-        <SearchField @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls" />
-        <LibraryEntries @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls"
+        <SearchField style="padding-bottom: 0px" 
+            @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls" />
+        <LibraryEntries style="padding-top: 0px" 
+            @add-novel="updateLibrary" :library="library" :libraryUrls="libraryUrls"
             @update-order="updateOrder" />
     </main>
 </template>
