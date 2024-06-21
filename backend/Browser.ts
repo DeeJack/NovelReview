@@ -38,7 +38,8 @@ export async function getPage() : Promise<Page> {
 }
 
 export async function closeBrowser(): Promise<void> {
-    await browser.close();
+    if (browser)
+        await browser.close();
 }
 
 export function closePage() {
