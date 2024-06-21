@@ -21,6 +21,7 @@ NovelReview offers several features:
 
 - [ ] Add HTTPS
 - [ ] Add an animation when loading edit page to prevent user from clicking other stuff.
+- [ ] Add password request for modifications, to prevent unwanted requests.
 
 ## Prerequisites
 
@@ -43,9 +44,14 @@ To get started:
 
 Once done, access the frontend from `http://localhost:5000/` (by default).
 
-### Puppeteer on linux
+### Puppeteer on Linux
 
-[https://stackoverflow.com/questions/69564238/puppeteer-error-failed-to-launch-the-browser-process](https://stackoverflow.com/questions/69564238/puppeteer-error-failed-to-launch-the-browser-process)
+You need to install all the libraries listed on the file [install_linux.sh](install_linux.sh).
+
+Then, if you are using a computer that doesn't have a display (probably a VPS), you need to use the commands:
+
+1. `Xvfb&` (not sure if needed)
+2. `npm run build`, `xvfb-run -a node dist/Server.js`, this will create a virtual display for the browser.
 
 ## Technologies Used
 
