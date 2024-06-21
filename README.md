@@ -41,7 +41,11 @@ To get started:
 4. Run the frontend in the frontend directory: `npm run dev`
 5. [Optional]: use make to build and run them: `make build`, `make frontend`[/backend]
 
-Once done, access the frontend from `http://localhost:5173/` (by default).
+Once done, access the frontend from `http://localhost:5000/` (by default).
+
+### Puppeteer on linux
+
+[https://stackoverflow.com/questions/69564238/puppeteer-error-failed-to-launch-the-browser-process](https://stackoverflow.com/questions/69564238/puppeteer-error-failed-to-launch-the-browser-process)
 
 ## Technologies Used
 

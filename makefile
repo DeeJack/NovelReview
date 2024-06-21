@@ -1,14 +1,14 @@
 #!make
 
 build: 
-	@echo off && cd frontend && npm i
-	@echo off && cd backend && npm i
+	cd frontend && npm i --include=dev
+	cd backend && npm i --include=dev
 
 frontend:
-	@echo off && cd frontend && @echo off && npm run dev < nul
+	cd frontend && npm run dev < nul
 
 backend:
-	@echo off && cd backend && @echo off && npm run dev < nul
+	cd backend && npm run dev < nul
 
 .PHONY: frontend
 .PHONY: backend
