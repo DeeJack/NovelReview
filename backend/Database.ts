@@ -58,7 +58,7 @@ async function runQueryAsync<T>(query: string, params?: any[]) {
 /**
  * Closes the database
  */
-export function close() {
+export function closeDatabase() {
     db.close()
 }
 

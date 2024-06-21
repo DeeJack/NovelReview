@@ -2,8 +2,8 @@ import { Novel } from "../models/Novel";
 import { Source } from "./Source";
 import axios from 'axios';
 import * as fs from 'fs';
-import { launch } from "puppeteer";
 import * as cheerio from 'cheerio';
+import { getPage } from '../Browser'
 
 const HEADERS = {
     'Referer': 'https://www.webnovel.com/',
@@ -54,8 +54,7 @@ export class MTLNovel implements Source {
      */
     async downloadWithPuppeteer(imageUrl: string, destinationPath: string) {
         // Cloudflare detected, open browser using selenium to solve the challenge and then download the image
-        let browser = await launch({ headless: false });
-        const page = await browser.newPage();
+        const page = await getPage();
 
         try {
             await page.goto(imageUrl, { waitUntil: 'networkidle2' });
@@ -64,7 +63,7 @@ export class MTLNovel implements Source {
         } catch (error) {
             console.error('Error:', error);
         } finally {
-            await browser.close();
+            await page.close();
         }
     }
 
@@ -102,8 +101,7 @@ export class MTLNovel implements Source {
      */
     async searchWithPuppeteer(keywords: string): Promise<string> {
         const searchUrl = `https://www.mtlnovel.com/wp-admin/admin-ajax.php?action=autosuggest&q=${keywords}&__amp_source_origin=https%3A%2F%2Fwww.mtlnovel.com`;
-        let browser = await launch({ headless: false });
-        const page = await browser.newPage();
+        const page = await getPage();
 
         try {
             await page.goto(searchUrl, { waitUntil: 'networkidle2' });
@@ -115,7 +113,7 @@ export class MTLNovel implements Source {
         } catch (error) {
             return '';
         } finally {
-            await browser.close();
+            await page.close();
         }
     }
 }

@@ -1,10 +1,9 @@
 import { Novel } from "../models/Novel";
 import { Source } from "./Source";
-import { launch } from "puppeteer";
 import fs from 'fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import crypto from 'crypto';
+import { getPage } from "../Browser";
 
 export class WebNovel implements Source {
     /**
@@ -13,8 +12,7 @@ export class WebNovel implements Source {
      * @param destinationPath The path to save the image to
      */
     async downloadImage(imageUrl: string, destinationPath: string) {
-        let browser = await launch({ headless: true });
-        const page = await browser.newPage();
+        const page = await getPage();
 
         try {
             await page.goto(imageUrl, { waitUntil: 'networkidle2' });
@@ -23,7 +21,7 @@ export class WebNovel implements Source {
         } catch (error) {
             console.error('Error:', error);
         } finally {
-            await browser.close();
+            await page.close();
         }
     }
 

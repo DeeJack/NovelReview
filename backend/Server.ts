@@ -1,7 +1,7 @@
 /**
  * Starts, stops, and handles the server stuff
  */
-import { getLibrary, close, backup, saveReview, deleteNovel, init, updateNovel, deleteNovelFromNext, getNextNovel, addNext, updateNext } from './Database';
+import { getLibrary, closeDatabase, backup, saveReview, deleteNovel, init, updateNovel, deleteNovelFromNext, getNextNovel, addNext, updateNext } from './Database';
 import { Request, Response, NextFunction } from 'express'
 import { getMTLNovelSource, getWebNovelSource, sources } from './sources/SourceUtils';
 import * as cron from 'node-cron';
@@ -10,6 +10,7 @@ import fs from 'fs';
 import express from 'express';
 const app = express();
 import cors from 'cors';
+import { closeBrowser } from './Browser';
 
 /**
  * Create the image folder
@@ -162,7 +163,7 @@ app.post('/api/next', (req: Request, res: Response) => {
 
 app.put('/api/next', (req: Request, res: Response) => {
     const text = req.body.text
-    
+
     updateNext(text)
         .then(() => res.send('Successfully updated next'))
         .catch((err) => res.send('Error updating next'));
@@ -184,10 +185,19 @@ cron.schedule('0 0 * * *', () => { // This will run at midnight every day
     backup();
 });
 
-// ON close event
-process.on('SIGINT', async () => {
+async function cleanup() {
     console.log('Closing database connection...');
-    close();
+    await closeBrowser();
+    closeDatabase();
     process.exit();
-});
+}
 
+// ON close event
+process.on('SIGINT', cleanup);
+
+process.on('SIGTERM', cleanup);
+process.on('exit', cleanup);
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    cleanup();
+});
