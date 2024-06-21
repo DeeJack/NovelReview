@@ -16,8 +16,10 @@ import Library from './views/Library.vue'
       <v-divider></v-divider>
 
       <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-library-shelves" title="Library" value="library" @click.stop="goToLibrary()"></v-list-item>
-        <v-list-item prepend-icon="mdi-book-arrow-right" title="Next reads" value="next" @click.stop="goToNext()"></v-list-item>
+        <v-list-item prepend-icon="mdi-library-shelves" title="Library" value="library"
+          @click.stop="goToLibrary()"></v-list-item>
+        <v-list-item prepend-icon="mdi-book-arrow-right" title="Next reads" value="next"
+          @click.stop="goToNext()"></v-list-item>
       </v-list>
     </v-navigation-drawer>
   </v-layout>

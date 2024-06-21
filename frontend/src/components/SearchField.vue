@@ -73,7 +73,7 @@ export default {
                 this.timer = setTimeout(() => {
                     this.currentText = this.search
                     this.items = []
-                    axios.get(`http://localhost:3000/api/${this.selectedOption}/search?query=${this.search}`)
+                    axios.get(`/api/${this.selectedOption}/search?query=${this.search}`)
                         .then((response) => {
                             this.items = response.data
                             this.loading = false
@@ -101,7 +101,7 @@ export default {
             if (added) {
                 let updatedLibrary = [novel, ...this.library]
                 this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
-                axios.post('http://localhost:3000/api/library', {
+                axios.post(`/api/library`, {
                     title: novel.title,
                     url: novel.url,
                     image: novel.image,
@@ -118,7 +118,7 @@ export default {
             let updatedLibrary = this.library
             updatedLibrary = updatedLibrary.filter((item) => item.url !== novel.url)
             this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
-            axios.delete(`http://localhost:3000/api/library/`, {
+            axios.delete(`/api/library/`, {
                 data: {
                     url: novel.url
                 }

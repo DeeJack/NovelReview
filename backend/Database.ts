@@ -149,7 +149,7 @@ export async function getLibrary(orderBy: string, direction: string): Promise<No
             await novelSource.downloadImage(originalImage, imagePath)
         }
 
-        row.image = `http://localhost:3000/images/${row.id}.png`
+        row.image = `images/${row.id}.png`
     });
     return novels;
 }

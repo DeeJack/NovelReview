@@ -30,7 +30,7 @@ export default {
             this.library = newLibrary
         },
         updateOrder(order, direction) {
-            axios.get(`http://localhost:3000/api/library?orderBy=${order}&direction=${direction}`)
+            axios.get(`/api/library?orderBy=${order}&direction=${direction}`)
                 .then((response) => {
                     this.library = response.data
                 })
@@ -40,7 +40,7 @@ export default {
         }
     },
     created() {
-        axios.get('http://localhost:3000/api/library')
+        axios.get(`/api/library`)
             .then((response) => {
                 this.library = response.data
             })

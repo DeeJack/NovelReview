@@ -105,7 +105,7 @@ app.post('/api/library', (req: Request, res: Response) => {
 
     saveReview(url, title, image, source, rating, review)
         .then((id) => {
-            res.send({ image: `http://localhost:3000/images/${id}.png` });
+            res.send({ image: `images/${id}.png` });
         })
         .catch((err) => {
             throw err;

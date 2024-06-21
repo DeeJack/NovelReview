@@ -52,7 +52,7 @@ export default {
             }
             
             this.timer = setTimeout(() => {
-                axios.put(`http://localhost:3000/api/next`, {
+                axios.put(`/api/next`, {
                     text: this.nextReads
                 })
                     .then((response) => {
@@ -97,7 +97,7 @@ export default {
         }
     },
     created() {
-        axios.get('http://localhost:3000/api/next').then(response => {
+        axios.get(`/api/next`).then(response => {
             this.nextReads = response.data.description
         }).catch(error => {
             console.log(error)

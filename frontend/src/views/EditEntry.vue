@@ -56,7 +56,7 @@ export default {
             }
             console.log(novel)
 
-            axios.put('http://localhost:3000/api/library', novel)
+            axios.put(`/api/library`, novel)
                 .then((response) => {
                     this.$router.push('/')
                 })
