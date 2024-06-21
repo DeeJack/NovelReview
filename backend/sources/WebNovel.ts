@@ -3,7 +3,7 @@ import { Source } from "./Source";
 import fs from 'fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { getPage } from "../Browser";
+import { getPage, closePage } from "../Browser";
 
 export class WebNovel implements Source {
     /**
@@ -22,6 +22,7 @@ export class WebNovel implements Source {
             console.error('Error:', error);
         } finally {
             await page.close();
+            closePage();
         }
     }
 

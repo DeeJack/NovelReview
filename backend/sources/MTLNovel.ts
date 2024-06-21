@@ -3,7 +3,7 @@ import { Source } from "./Source";
 import axios from 'axios';
 import * as fs from 'fs';
 import * as cheerio from 'cheerio';
-import { getPage } from '../Browser'
+import { getPage, closePage } from '../Browser'
 
 const HEADERS = {
     'Referer': 'https://www.webnovel.com/',
@@ -64,6 +64,7 @@ export class MTLNovel implements Source {
             console.error('Error:', error);
         } finally {
             await page.close();
+            closePage();
         }
     }
 
@@ -114,6 +115,7 @@ export class MTLNovel implements Source {
             return '';
         } finally {
             await page.close();
+            closePage();
         }
     }
 }
