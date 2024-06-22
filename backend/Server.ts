@@ -146,6 +146,10 @@ app.post('/api/library', (req: Request, res: Response) => {
     const rating = req.body.rating
     const review = req.body.review
 
+    if (!url || !title || !source) {
+        res.status(400).send('URL, title, and source required!')
+    }
+
     saveReview(url, title, image, source, rating, review)
         .then((id) => {
             res.send({ image: `images/${id}.png` });
@@ -173,6 +177,10 @@ app.put('/api/library', async (req: Request, res: Response) => {
     const tags = req.body.tags
     const url = req.body.url
     const title = req.body.title
+
+    if (!url || !title) {
+        res.status(400).send('URL and title required!')
+    }
 
     updateNovel(url, title, rating, review, chapter, notes, tags)
         .then(() => res.send('Successfully updated library'))

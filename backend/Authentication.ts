@@ -19,7 +19,6 @@ export async function onRegister(username: string, password: string): Promise<st
 }
 
 export async function onLogin(username: string, password: string): Promise<string | null> {
-    // password = bcrypt.hashSync(password, 10);
     let loggedIn = await login(username, password);
     if (loggedIn) {
         return jwt.sign({ username }, jwtSecret);
