@@ -38,7 +38,18 @@ export default {
         }
     },
     methods: {
+        checkLogin() {
+            let username = localStorage.getItem('username')
+            let token = localStorage.getItem('token')
+            if (!username || !token) {
+                this.$router.push({ name: 'Login' })
+                return false;
+            }
+            return true;
+        },
         saveChanges() {
+            if (!this.checkLogin())
+                return;
             if (!this.loading) {
                 window.addEventListener('beforeunload', this.beforeUnloadHandler)
             }
@@ -53,7 +64,8 @@ export default {
             
             this.timer = setTimeout(() => {
                 axios.put(`/api/next`, {
-                    text: this.nextReads
+                    text: this.nextReads,
+                    token: localStorage.getItem('token')
                 })
                     .then((response) => {
                         this.lastUpdated = new Date().toLocaleString()
@@ -72,20 +84,16 @@ export default {
             let previousLines = textArea.value.substr(0, textArea.selectionStart).split("\n")
             // console.log(changedText)
             if (e.keyCode === 13 && previousLines.length > 1) { // Enter
-                console.log(previousLines)
                 let firstWord = previousLines[previousLines.length - 2].split('.').length > 0 ? previousLines[previousLines.length - 2].split('.')[0] : ''
-                console.log(firstWord)
                 if (isNaN(firstWord))
                     return
                 let number = parseInt(firstWord)
-                console.log('Number: ', number)
                 if (number > 0) {
                     let newText = textArea.value.substr(0, textArea.selectionStart) + '' + (number + 1) + '. ' + textArea.value.substr(textArea.selectionStart + 1)
                     textArea.value = newText
                     textArea.selectionStart = newText.length
                     textArea.selectionEnd = newText.length
                 }
-                console.log(e)
             }
         }
     },

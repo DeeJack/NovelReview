@@ -28,6 +28,15 @@ const router = createRouter({
       meta: {
         title: 'Next Entry'
       }
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      params: true,
+      component: () => import('../views/Login.vue'),
+      meta: {
+        title: 'Login'
+      }
     }
     // {
     //   path: '/about',

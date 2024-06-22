@@ -23,9 +23,7 @@
                     </v-btn>
                 </div>
                 <div class="center" style="background: black;">
-                    <v-img class="imageThumb" 
-                        :lazy-src="`/images/noimage.png`" 
-                        :src="`/${novel.image}`"
+                    <v-img class="imageThumb" :lazy-src="`/images/noimage.png`" :src="`/${novel.image}`"
                         @load="imageLoaded = true" @error="this.src = this.src" cover width="auto" height="276px"
                         :style="novel.source.includes('webnovel') ? 'object-fit: cover' : ''">
 
@@ -35,8 +33,7 @@
                             </div>
                         </template>
                         <template v-slot:error>
-                            <v-img class="mx-auto" height="300" max-width="500"
-                                :src="`/images/noimage.png`"></v-img>
+                            <v-img class="mx-auto" height="300" max-width="500" :src="`/images/noimage.png`"></v-img>
                         </template>
                     </v-img>
                 </div>
@@ -125,6 +122,15 @@ export default {
     },
     props: ['library', 'libraryUrls'],
     methods: {
+        checkLogin() {
+            let username = localStorage.getItem('username')
+            let token = localStorage.getItem('token')
+            if (!username || !token) {
+                this.$router.push({ name: 'Login' })
+                return false;
+            }
+            return true;
+        },
         getColor(novel) {
             if (novel.rating < 5)
                 return '#8B0000'
@@ -135,14 +141,19 @@ export default {
             return '#FFD700'
         },
         goToEdit(novel) {
+            if (!this.checkLogin())
+                return;
             localStorage.setItem('novel', JSON.stringify(novel))
             this.$router.push({ name: 'Edit' })
         },
         deleteNovel(novel) {
+            if (!this.checkLogin())
+                return;
+
             let ok = confirm(`Are you sure you want to delete ${novel.title}?`)
             if (!ok)
                 return
-            axios.delete(`/api/library/`, { data: { url: novel.url } })
+            axios.delete(`/api/library/`, { data: { url: novel.url, token: localStorage.getItem('token') } })
                 .then((response) => {
                     let updatedLibrary = this.library.filter((item) => item.url !== novel.url)
                     this.$emit('add-novel', updatedLibrary)

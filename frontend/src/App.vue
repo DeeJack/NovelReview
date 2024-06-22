@@ -16,6 +16,28 @@ import Library from './views/Library.vue'
       <v-divider></v-divider>
 
       <v-list density="compact" nav>
+        <div v-if="!!token && !!username">
+          <v-list-item title="Welcome" nav>
+            <template v-slot:prepend>
+              <v-icon>mdi-account</v-icon>
+            </template>
+            <template v-slot:default>
+              <span>{{ username }}</span>
+            </template>
+          </v-list-item>
+          <v-list-item nav>
+            <template v-slot:prepend>
+              <v-icon>mdi-logout</v-icon>
+            </template>
+            <template v-slot:default>
+              <v-btn variant="text" style="padding:0px" @click="logout()">Logout</v-btn>
+            </template>
+          </v-list-item>
+        </div>
+        <div v-else>
+        <v-list-item prepend-icon="mdi-login" title="Login" value="login"
+          @click.stop="goToLogin()"></v-list-item>
+        </div>
         <v-list-item prepend-icon="mdi-library-shelves" title="Library" value="library"
           @click.stop="goToLibrary()"></v-list-item>
         <v-list-item prepend-icon="mdi-book-arrow-right" title="Next reads" value="next"
@@ -27,12 +49,30 @@ import Library from './views/Library.vue'
 </template>
 
 <script>
+let username = '';
+let token = '';
+
+export function updateLogin(newUsername, newToken) {
+  username = newUsername
+  token = newToken
+}
+
+function logout() {
+  localStorage.removeItem('username')
+  localStorage.removeItem('token')
+  updateLogin('', '')
+}
+
 export default {
   data() {
     return {
       drawer: true,
       rail: true,
     }
+  },
+  created() {
+    username = localStorage.getItem('username') || ''
+    token = localStorage.getItem('token') || ''
   },
   methods: {
     goToLibrary() {
@@ -42,6 +82,10 @@ export default {
     goToNext() {
       this.rail = true
       this.$router.push('/next')
+    },
+    goToLogin() {
+      this.rail = true
+      this.$router.push('/login')
     }
   }
 }

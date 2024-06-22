@@ -38,7 +38,19 @@ export default {
         }
     },
     methods: {
+        checkLogin() {
+            let username = localStorage.getItem('username')
+            let token = localStorage.getItem('token')
+            if (!username || !token) {
+                this.$router.push({ name: 'Login' })
+                return false;
+            }
+            return true;
+        },
         async save() {
+            if (!this.checkLogin())
+                return;
+            
             const { valid } = await this.$refs.form.validate()
 
             if (!valid)
@@ -52,7 +64,8 @@ export default {
                 review: this.review,
                 notes: this.notes,
                 tags: this.tags,
-                url: this.novel.url,
+                url: this.novel.url, 
+                token: localStorage.getItem('token')
             }
             console.log(novel)
 

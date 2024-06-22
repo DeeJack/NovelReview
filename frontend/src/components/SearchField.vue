@@ -64,6 +64,15 @@ export default {
     },
     props: ['library', 'libraryUrls'],
     methods: {
+        checkLogin() {
+            let username = localStorage.getItem('username')
+            let token = localStorage.getItem('token')
+            if (!username || !token) {
+                this.$router.push({ name: 'Login' })
+                return false;
+            }
+            return true;
+        },
         searchHints() {
             this.loading = true
             if (this.timer) {
@@ -89,8 +98,9 @@ export default {
             }
         },
         async handleButtonClick(novel) {
-            // Call your function here
-            // For demonstration, we'll just toggle the icon and color
+            if (!this.checkLogin())
+                return;
+
             let added = true;
             if (this.libraryUrls.includes(novel.url))
                 added = false;
@@ -105,7 +115,8 @@ export default {
                     title: novel.title,
                     url: novel.url,
                     image: novel.image,
-                    source: this.selectedOption
+                    source: this.selectedOption, 
+                    token: localStorage.getItem('token')
                 })
                     .then((response) => {
                         novel.image = response.data.image
@@ -120,7 +131,8 @@ export default {
             this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
             axios.delete(`/api/library/`, {
                 data: {
-                    url: novel.url
+                    url: novel.url, 
+                    token: localStorage.getItem('token')
                 }
             })
                 .catch((error) => {
@@ -128,6 +140,9 @@ export default {
                 })
         },
         addAndEdit(novel) {
+            if (!this.checkLogin())
+                return;
+
             this.handleButtonClick(novel)
             localStorage.setItem('novel', JSON.stringify(novel))
             this.$router.push({ name: 'Edit' })
