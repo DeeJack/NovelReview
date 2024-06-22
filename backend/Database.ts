@@ -24,11 +24,9 @@ const IMAGE_PATH = './public/images'
 export async function init() {
     try {
         // Create table library if it doesn't exist
-        await runQueryAsync('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, notes TEXT, tags TEXT, added_at datetime default current_timestamp)')
-        // db.run('CREATE TABLE IF NOT EXISTS next (id INTEGER PRIMARY KEY, order int, title TEXT, url TEXT, comments TEXT, read BOOLEAN, image TEXT)')
+        await runQueryAsync('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, userid INTEGER NOT NULL, title TEXT NOT NULL, url TEXT NOT NULL, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, notes TEXT, tags TEXT, added_at datetime default current_timestamp)')
         await runQueryAsync('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)')
-        await runQueryAsync('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, description TEXT)')
-        await runQueryAsync('INSERT OR IGNORE INTO nextTemp (id, description) VALUES (1, "")')
+        await runQueryAsync('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, userid NOT NULL,  description TEXT)')
     } catch (e) {
         console.log(e)
     }
@@ -222,19 +220,6 @@ export async function deleteNovel(url: string) {
  * SECTION "NEXT" (novels to read next)
  */
 
-/**
- * Delete a novel from the "next" section (I don't think it's implemented yet)
- */
-export async function deleteNovelFromNext(id: string) {
-    const deleteQuery = `DELETE FROM next WHERE id = ?`
-
-    try {
-        await runQueryAsync(deleteQuery, [id]);
-    } catch (e) {
-        throw e;
-    }
-}
-
 export async function getNextNovel() {
     const selectQuery = 'SELECT description FROM nextTemp WHERE id = 1'
 
@@ -243,16 +228,6 @@ export async function getNextNovel() {
         return rows[0];
     } catch (e) {
         throw e;
-    }
-}
-
-export async function addNext(title: string, url: string, image: string) {
-    const insertQuery = `INSERT INTO next (title, url, image) VALUES (?, ?, ?)`
-
-    try {
-        await runQueryAsync(insertQuery, [title, url, image]);
-    } catch (e) {
-        throw e
     }
 }
 
