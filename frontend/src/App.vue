@@ -35,8 +35,7 @@ import Library from './views/Library.vue'
           </v-list-item>
         </div>
         <div v-else>
-        <v-list-item prepend-icon="mdi-login" title="Login" value="login"
-          @click.stop="goToLogin()"></v-list-item>
+          <v-list-item prepend-icon="mdi-login" title="Login" value="login" @click.stop="goToLogin()"></v-list-item>
         </div>
         <v-list-item prepend-icon="mdi-library-shelves" title="Library" value="library"
           @click.stop="goToLibrary()"></v-list-item>
@@ -49,12 +48,24 @@ import Library from './views/Library.vue'
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
 let username = '';
 let token = '';
 
 export function updateLogin(newUsername, newToken) {
   username = newUsername
   token = newToken
+}
+
+export function checkLogin() {
+  let router = useRouter();
+  let username = localStorage.getItem('username');
+  let token = localStorage.getItem('token');
+  if (!username || !token) {
+    router.push({ name: 'Login' });
+    return false;
+  }
+  return true;
 }
 
 function logout() {

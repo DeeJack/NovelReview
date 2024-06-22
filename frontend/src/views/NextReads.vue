@@ -14,7 +14,8 @@
             <v-textarea v-model="nextReads" @update:modelValue="saveChanges" auto-grow v-on:keyup="onKeyPressed">
 
             </v-textarea>
-            <span style="position: absolute; bottom: 0; right: 0; margin: 5px; margin-bottom: 25px;" v-if="lastUpdated">Last
+            <span style="position: absolute; bottom: 0; right: 0; margin: 5px; margin-bottom: 25px;"
+                v-if="lastUpdated">Last
                 updated: {{ lastUpdated }}</span>
         </div>
     </v-container>
@@ -22,6 +23,7 @@
 
 <script>
 import axios from 'axios'
+import { checkLogin } from '../App.vue';
 
 export default {
     data() {
@@ -38,18 +40,10 @@ export default {
         }
     },
     methods: {
-        checkLogin() {
-            let username = localStorage.getItem('username')
-            let token = localStorage.getItem('token')
-            if (!username || !token) {
-                this.$router.push({ name: 'Login' })
-                return false;
-            }
-            return true;
-        },
         saveChanges() {
-            if (!this.checkLogin())
+            if (!checkLogin())
                 return;
+
             if (!this.loading) {
                 window.addEventListener('beforeunload', this.beforeUnloadHandler)
             }
@@ -57,15 +51,18 @@ export default {
             this.loading = true
             this.lastUpdated = ''
 
-            
+
             if (this.timer) {
                 clearTimeout(this.timer)
             }
-            
+
             this.timer = setTimeout(() => {
                 axios.put(`/api/next`, {
-                    text: this.nextReads,
-                    token: localStorage.getItem('token')
+                    text: this.nextRead
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
                 })
                     .then((response) => {
                         this.lastUpdated = new Date().toLocaleString()
@@ -105,7 +102,13 @@ export default {
         }
     },
     created() {
-        axios.get(`/api/next`).then(response => {
+        if (!checkLogin())
+            return;
+        axios.get(`/api/next`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        }).then(response => {
             this.nextReads = response.data.description
         }).catch(error => {
             console.log(error)

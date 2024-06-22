@@ -2,7 +2,8 @@
     <v-container fluid>
         <v-form v-model="valid" fast-fail @submit.prevent ref="form">
             <v-text-field v-model="title" :rules="rules.rule" label="Title" required></v-text-field>
-            <v-text-field v-model="chapter" :rules="rules.numberRules" type="number" label="Last chapter"></v-text-field>
+            <v-text-field v-model="chapter" :rules="rules.numberRules" type="number"
+                label="Last chapter"></v-text-field>
             <v-text-field v-model="rating" :rules="rules.numberRules" type="number" label="Rating"></v-text-field>
             <v-text-field v-model="notes" label="Notes"></v-text-field>
             <v-text-field v-model="tags" label="Tags (separated by comma)"></v-text-field>
@@ -18,6 +19,7 @@
 
 <script>
 import axios from 'axios'
+import { checkLogin } from '../App.vue';
 
 export default {
     data() {
@@ -33,24 +35,15 @@ export default {
 
             rules: {
                 rule: [v => !!v || 'Required'],
-                numberRules: [v=> console.log(v) || true, v => v === undefined || v === null || !isNaN(v) || 'No!'],
+                numberRules: [v => console.log(v) || true, v => v === undefined || v === null || !isNaN(v) || 'No!'],
             }
         }
     },
     methods: {
-        checkLogin() {
-            let username = localStorage.getItem('username')
-            let token = localStorage.getItem('token')
-            if (!username || !token) {
-                this.$router.push({ name: 'Login' })
-                return false;
-            }
-            return true;
-        },
         async save() {
-            if (!this.checkLogin())
+            if (!checkLogin())
                 return;
-            
+
             const { valid } = await this.$refs.form.validate()
 
             if (!valid)
@@ -64,12 +57,14 @@ export default {
                 review: this.review,
                 notes: this.notes,
                 tags: this.tags,
-                url: this.novel.url, 
-                token: localStorage.getItem('token')
+                url: this.novel.url
             }
-            console.log(novel)
 
-            axios.put(`/api/library`, novel)
+            axios.put(`/api/library`, novel, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
                 .then((response) => {
                     this.$router.push('/')
                 })

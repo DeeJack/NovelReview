@@ -94,7 +94,6 @@ export default {
                 localStorage.setItem("token", response.data.token)
                 localStorage.setItem("username", this.username)
                 updateLogin(this.username, response.data.token);
-                this.$emit('login');
                 this.$router.push('/');
                 this.loading = false;
             }).catch(error => {
@@ -105,7 +104,7 @@ export default {
         },
         async register() {
             await this.checkValidation();
-            
+
             this.loading = true;
 
             const { valid } = await this.$refs.form.validate()
@@ -114,8 +113,6 @@ export default {
                 this.loading = false;
                 return;
             }
-
-            console.log(valid)
 
             await axios.post('/api/register', {
                 username: this.username,
@@ -129,7 +126,6 @@ export default {
                 localStorage.setItem("token", response.data.token)
                 localStorage.setItem("username", this.username)
                 updateLogin(this.username, response.data.token);
-                this.$emit('login', { username: this.username, token: response.data.token });
                 this.$router.push('/');
                 this.loading = false;
             }).catch(error => {

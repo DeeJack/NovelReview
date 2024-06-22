@@ -35,13 +35,8 @@
                 </v-list-item>
             </template>
             <template #prepend-item>
-                <v-progress-linear
-                    v-if="loading"
-                    color="deep-purple-accent-4"
-                    height="6"
-                    indeterminate
-                    rounded
-                ></v-progress-linear>
+                <v-progress-linear v-if="loading" color="deep-purple-accent-4" height="6" indeterminate
+                    rounded></v-progress-linear>
             </template>
         </v-combobox>
         <!-- <v-autocomplete v-model="values" :items="items" label="Default" density="comfortable"></v-autocomplete> -->
@@ -49,6 +44,8 @@
 </template>
 <script>
 import axios from 'axios'
+import { checkLogin } from '../App.vue';
+
 export default {
     data() {
         return {
@@ -64,16 +61,9 @@ export default {
     },
     props: ['library', 'libraryUrls'],
     methods: {
-        checkLogin() {
-            let username = localStorage.getItem('username')
-            let token = localStorage.getItem('token')
-            if (!username || !token) {
-                this.$router.push({ name: 'Login' })
-                return false;
-            }
-            return true;
-        },
         searchHints() {
+            if (!checkLogin())
+                return;
             this.loading = true
             if (this.timer) {
                 clearTimeout(this.timer)
@@ -82,7 +72,11 @@ export default {
                 this.timer = setTimeout(() => {
                     this.currentText = this.search
                     this.items = []
-                    axios.get(`/api/${this.selectedOption}/search?query=${this.search}`)
+                    axios.get(`/api/${this.selectedOption}/search?query=${this.search}`, {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        }
+                    })
                         .then((response) => {
                             this.items = response.data
                             this.loading = false
@@ -98,7 +92,7 @@ export default {
             }
         },
         async handleButtonClick(novel) {
-            if (!this.checkLogin())
+            if (!checkLogin())
                 return;
 
             let added = true;
@@ -115,8 +109,11 @@ export default {
                     title: novel.title,
                     url: novel.url,
                     image: novel.image,
-                    source: this.selectedOption, 
-                    token: localStorage.getItem('token')
+                    source: this.selectedOption,
+                }, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    }
                 })
                     .then((response) => {
                         novel.image = response.data.image
@@ -130,9 +127,10 @@ export default {
             updatedLibrary = updatedLibrary.filter((item) => item.url !== novel.url)
             this.$emit('add-novel', updatedLibrary); // Emit an event with the new data
             axios.delete(`/api/library/`, {
-                data: {
-                    url: novel.url, 
-                    token: localStorage.getItem('token')
+                url: novel.url,
+            }, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 }
             })
                 .catch((error) => {

@@ -80,6 +80,7 @@
 
 <script>
 import axios from 'axios'
+import { checkLogin } from '../App.vue';
 
 export default {
     data() {
@@ -122,15 +123,6 @@ export default {
     },
     props: ['library', 'libraryUrls'],
     methods: {
-        checkLogin() {
-            let username = localStorage.getItem('username')
-            let token = localStorage.getItem('token')
-            if (!username || !token) {
-                this.$router.push({ name: 'Login' })
-                return false;
-            }
-            return true;
-        },
         getColor(novel) {
             if (novel.rating < 5)
                 return '#8B0000'
@@ -141,19 +133,26 @@ export default {
             return '#FFD700'
         },
         goToEdit(novel) {
-            if (!this.checkLogin())
+            if (!checkLogin())
                 return;
             localStorage.setItem('novel', JSON.stringify(novel))
             this.$router.push({ name: 'Edit' })
         },
         deleteNovel(novel) {
-            if (!this.checkLogin())
+            if (!checkLogin())
                 return;
 
             let ok = confirm(`Are you sure you want to delete ${novel.title}?`)
             if (!ok)
                 return
-            axios.delete(`/api/library/`, { data: { url: novel.url, token: localStorage.getItem('token') } })
+            axios.delete(`/api/library/`, {
+                data: {
+                    url: novel.url
+                },
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                }
+            })
                 .then((response) => {
                     let updatedLibrary = this.library.filter((item) => item.url !== novel.url)
                     this.$emit('add-novel', updatedLibrary)
