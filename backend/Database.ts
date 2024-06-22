@@ -118,9 +118,15 @@ declare module "sqlite3" {
  * @param orderBy The parameter to order by, possible values are 0 (date added), 1 (rating), 2 (last chapter), 3 (title)
  * @param direction The direction to order by, possible values are 0 (descending) and 1 (ascending)
  */
-export async function getLibrary(orderBy: string, direction: string): Promise<Novel[]> {
+export async function getLibrary(orderBy: string, direction: string, username: string): Promise<Novel[]> {
     let order = 'added_at'
     let directionString = 'DESC'
+
+    let userID = await getID(username);
+
+    if (userID < 0) {
+        throw new Error('User not found');
+    }
 
     /**
      * Set the parameter we want to order by, and the direction, for the SQL query.
@@ -135,12 +141,12 @@ export async function getLibrary(orderBy: string, direction: string): Promise<No
     if (direction === '1')
         directionString = 'ASC'
 
-    const selectQuery = `SELECT id, title, url, image, source, rating, review, chapter, notes, tags FROM library ORDER BY ${order} ${directionString}`
+    const selectQuery = `SELECT id, title, url, image, source, rating, review, chapter, notes, tags FROM library WHERE userid = ? ORDER BY ${order} ${directionString}`
 
     /**
      * Download the images for all the novels found, if they weren't downloaded already
      */
-    let novels = await selectAllAsync<Novel>(selectQuery);
+    let novels = await selectAllAsync<Novel>(selectQuery, [userID]);
     novels.forEach(async (row) => {
         let originalImage = row.image
         let imagePath = path.join(IMAGE_PATH, `${row.id}.png`)
@@ -158,40 +164,52 @@ export async function getLibrary(orderBy: string, direction: string): Promise<No
 /**
  * Saves a review to the library
  */
-export async function saveReview(url: string, title: string, image: string, source: string, rating: string, review: string): Promise<number> {
+export async function saveReview(url: string, title: string, image: string, source: string, rating: string, review: string, username: string): Promise<number> {
+    let userID = await getID(username);
+
+    if (userID < 0) {
+        throw new Error('User not found');
+    }
+
     /**
      * Check if the novel is already in the library
      */
-    let rows = await selectAllAsync<{ url: string }>('SELECT * FROM library WHERE url = ?');
+    let rows = await selectAllAsync<{ url: string }>('SELECT * FROM library WHERE url = ? AND userid = ?', [url, userID]);
     if (rows.length > 0) {
         throw new Error('Novel already in library');
     }
 
-    const insertQuery = `INSERT INTO library (title, url, image, source, rating, review) 
-        VALUES (?, ?, ?, ?, ?, ?)`;
+    const insertQuery = `INSERT INTO library (title, url, image, source, rating, review, userid) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
     try {
-        await runQueryAsync(insertQuery, [title, url, image, source, rating, review]);
+        await runQueryAsync(insertQuery, [title, url, image, source, rating, review, userID]);
     } catch (e) {
         throw e;
     }
 
+    let lastID = await selectAllAsync<{ id: number }>('SELECT id FROM library WHERE url = ? AND userid = ?', [url, userID]);
 
-    let lastId = await selectAllAsync<{ id: number }>('SELECT last_insert_rowid() as id');
     let novelSource = getSourceFromURL(url);
-    await novelSource.downloadImage(image, `./public/images/${lastId[0]['id']}.png`);
-    return lastId[0]['id'];
+    await novelSource.downloadImage(image, `./public/images/${lastID[0]['id']}.png`);
+    return lastID[0]['id'];
 }
 
 
 /**
  * Modifies a novel in the library
  */
-export async function updateNovel(url: string, title: string, rating: number, review: string, chapter: number, notes: string, tags: string) {
-    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, notes = ?, tags = ?, title = ? WHERE url = ?`
+export async function updateNovel(url: string, title: string, rating: number, review: string, chapter: number, notes: string, tags: string, username: string) {
+    let userID = await getID(username);
+
+    if (userID < 0) {
+        throw new Error('User not found');
+    }
+
+    const updateQuery = `UPDATE library SET rating = ?, review = ?, chapter = ?, notes = ?, tags = ?, title = ? WHERE url = ? AND userid = ?`
 
     try {
-        await runQueryAsync(updateQuery, [rating, review, chapter, notes, tags, title, url]);
+        await runQueryAsync(updateQuery, [rating, review, chapter, notes, tags, title, url, userID]);
     } catch (e) {
         throw e;
     }
@@ -200,15 +218,25 @@ export async function updateNovel(url: string, title: string, rating: number, re
 /**
  * Delete a novel from the library
  */
-export async function deleteNovel(url: string) {
-    const deleteQuery = `DELETE FROM library WHERE url = ?`;
-    const idQuery = `SELECT id FROM library WHERE url = ?`;
+export async function deleteNovel(url: string, username: string) {
+    let userID = await getID(username);
+
+    if (userID < 0) {
+        throw new Error('User not found');
+    }
+
+    const deleteQuery = `DELETE FROM library WHERE url = ? AND userid = ?`;
+    const idQuery = `SELECT id FROM library WHERE url = ? AND userid = ?`;
 
     try {
         // Get the ID from the URL
-        let ids = await selectAllAsync<{ id: number }>(idQuery, [url]);
+        let ids = await selectAllAsync<{ id: number }>(idQuery, [url, userID]);
+        // No novel found, skip
+        if (!ids || ids.length == 0 || !ids[0]['id']) {
+            return;
+        }
         // Delete the novel
-        await runQueryAsync(deleteQuery, [url]);
+        await runQueryAsync(deleteQuery, [url, userID]);
         // Delete the thumbnail
         fs.unlinkSync(`./public/images/${ids[0]['id']}.png`);
     } catch (e) {
@@ -220,26 +248,42 @@ export async function deleteNovel(url: string) {
  * SECTION "NEXT" (novels to read next)
  */
 
-export async function getNextNovel() {
-    const selectQuery = 'SELECT description FROM nextTemp WHERE id = 1'
+export async function getNextNovel(username: string) {
+    let userID = await getID(username);
+
+    if (userID < 0) {
+        throw new Error('User not found');
+    }
+
+    const selectQuery = 'SELECT description FROM nextTemp WHERE userid = ?'
 
     try {
-        let rows = await selectAllAsync<{ description: string }>(selectQuery);
+        let rows = await selectAllAsync<{ description: string }>(selectQuery, [userID]);
         return rows[0];
     } catch (e) {
         throw e;
     }
 }
 
-export async function updateNext(description: string) {
-    const updateQuery = 'UPDATE nextTemp SET description = ? WHERE id = 1'
+export async function updateNext(description: string, username: string) {
+    let userID = await getID(username);
+
+    if (userID < 0) {
+        throw new Error('User not found');
+    }
+
+    const updateQuery = 'UPDATE nextTemp SET description = ? WHERE userid = ?'
 
     try {
-        await runQueryAsync(updateQuery, [description]);
+        await runQueryAsync(updateQuery, [description, userID]);
     } catch (e) {
         throw e
     }
 }
+
+/**
+ * SECTION "AUTHENTICATION"
+ */
 
 export async function login(username: string, clearPassword: string): Promise<boolean> {
     const selectQuery = 'SELECT * FROM users WHERE username = ?';
@@ -268,8 +312,28 @@ export async function register(username: string, password: string): Promise<bool
 
     try {
         await runQueryAsync(insertQuery, [username, password]);
+
+        let userID = await getID(username);
+        // Insert a new row for the next novels.
+        await runQueryAsync('INSERT INTO nextTemp (userid, description) VALUES (?, ?)', [userID, '']);
+        
         return true;
     } catch (e) {
         return false;
+    }
+}
+
+async function getID(username: string): Promise<number> {
+    if (!username) {
+        return -1
+    }
+
+    const selectQuery = 'SELECT id FROM users WHERE username = ?'
+
+    try {
+        let rows = await selectAllAsync<{ id: number }>(selectQuery, [username]);
+        return rows[0].id;
+    } catch (e) {
+        return -1
     }
 }

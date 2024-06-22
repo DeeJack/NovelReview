@@ -30,9 +30,9 @@ export async function onLogin(username: string, password: string): Promise<strin
 /**
  * Check the validity of the JWT token, return the username if valid, null otherwise
  */
-export function checkJWT(token: string): string |JwtPayload | null {
+export function checkJWT(token: string): JwtPayload | null {
     try {
-        return jwt.verify(token, jwtSecret);
+        return jwt.verify(token, jwtSecret) as JwtPayload;
     } catch (e) {
         return null;
     }

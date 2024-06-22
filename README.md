@@ -21,7 +21,7 @@ NovelReview offers several features:
 
 - [ ] Add HTTPS
 - [ ] Add an animation when loading edit page to prevent user from clicking other stuff.
-- [ ] Add password request for modifications, to prevent unwanted requests.
+- [x] Add password request for modifications, to prevent unwanted requests.
 
 ## Prerequisites
 

@@ -52,8 +52,8 @@ export default {
             ],
             passwordRules: [
                 value => {
-                    if (!value || value.length < 4) {
-                        return 'At least 4 characters, come on'
+                    if (!value || value.length < 3) {
+                        return 'At least 3 characters, come on'
                     }
                     if (this.errorLogin) {
                         return "Wrong username or password!"

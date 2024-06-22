@@ -16,6 +16,7 @@ const app = express();
 import cors from 'cors';
 import { closeBrowser } from './Browser';
 import { onLogin, onRegister, checkJWT } from './Authentication';
+import { JwtPayload } from 'jsonwebtoken';
 
 /**
  * Create the image folder
@@ -73,14 +74,20 @@ function authenticateToken(req, res, next) {
     if (token == null)
         return res.sendStatus(401)
 
-    let username = checkJWT(token)
-    if (!username) {
+    let user: JwtPayload = checkJWT(token)
+    if (!user) {
         return res.sendStatus(403)
     }
 
-    req.username = username
+    req.username = user.username
 
     next();
+}
+
+declare module "express" {
+    interface Request {
+        username: string;
+    }
 }
 
 app.use(authenticateToken); // All routes after this will require authentication
@@ -142,8 +149,9 @@ app.get('/api/library', async (req: Request, res: Response) => {
     const orderBy = req.query.orderBy || '0'
     const direction = req.query.direction || '0'
 
-    let library = await getLibrary(orderBy.toString(), direction.toString())
-    res.send(library)
+    getLibrary(orderBy.toString(), direction.toString(), req.username)
+        .then((library) => res.send(library))
+        .catch((err) => res.send('Error getting library'));
 });
 
 /**
@@ -161,7 +169,7 @@ app.post('/api/library', (req: Request, res: Response) => {
         res.status(400).send('URL, title, and source required!')
     }
 
-    saveReview(url, title, image, source, rating, review)
+    saveReview(url, title, image, source, rating, review, req.username)
         .then((id) => {
             res.send({ image: `images/${id}.png` });
         })
@@ -186,7 +194,7 @@ app.put('/api/library', async (req: Request, res: Response) => {
         res.status(400).send('URL and title required!')
     }
 
-    updateNovel(url, title, rating, review, chapter, notes, tags)
+    updateNovel(url, title, rating, review, chapter, notes, tags, req.username)
         .then(() => res.send('Successfully updated library'))
         .catch(() => res.send('Error updating library'))
 });
@@ -197,7 +205,7 @@ app.put('/api/library', async (req: Request, res: Response) => {
 app.delete('/api/library/', (req: Request, res: Response) => {
     const url = req.body.url
 
-    deleteNovel(url)
+    deleteNovel(url, req.username)
         .then(() => res.send('Successfully deleted from library'))
         .catch((err) => res.send('Error deleting from library'));
 });
@@ -207,7 +215,7 @@ app.delete('/api/library/', (req: Request, res: Response) => {
  */
 
 app.get('/api/next', (req: Request, res: Response) => {
-    getNextNovel()
+    getNextNovel(req.username)
         .then((novel) => res.send(novel))
         .catch((err) => res.send('Error getting next novel'));
 });
@@ -215,7 +223,7 @@ app.get('/api/next', (req: Request, res: Response) => {
 app.put('/api/next', (req: Request, res: Response) => {
     const text = req.body.text
 
-    updateNext(text)
+    updateNext(text, req.username)
         .then(() => res.send('Successfully updated next'))
         .catch((err) => res.send('Error updating next'));
 });
