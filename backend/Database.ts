@@ -7,6 +7,7 @@ import { Novel } from './models/Novel';
 import { getSourceFromURL, sources } from './sources/SourceUtils';
 import * as path from 'path';
 import { comparePassword } from './Authentication';
+import { logger } from './Logger';
 
 /**
  * Instance for the SQLite database
@@ -28,7 +29,7 @@ export async function init() {
         await runQueryAsync('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)')
         await runQueryAsync('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, userid NOT NULL,  description TEXT)')
     } catch (e) {
-        console.log(e)
+        logger.error(e)
     }
 }
 
@@ -76,6 +77,7 @@ export function backup() {
 
     db.backup(`./backups/backup-${new Date().toISOString()}.db`, (err) => {
         if (err) {
+            logger.error(err)
             return console.error(err.message);
         }
         console.log('Backup completed successfully.');
@@ -296,6 +298,7 @@ export async function login(username: string, clearPassword: string): Promise<bo
         let hashedPassword = rows[0].password;
         return await comparePassword(clearPassword, hashedPassword);
     } catch (e) {
+        logger.error(e)
         console.log(e);
         return false;
     }
@@ -316,9 +319,10 @@ export async function register(username: string, password: string): Promise<bool
         let userID = await getID(username);
         // Insert a new row for the next novels.
         await runQueryAsync('INSERT INTO nextTemp (userid, description) VALUES (?, ?)', [userID, '']);
-        
+
         return true;
     } catch (e) {
+        logger.error(e)
         return false;
     }
 }
@@ -334,6 +338,7 @@ async function getID(username: string): Promise<number> {
         let rows = await selectAllAsync<{ id: number }>(selectQuery, [username]);
         return rows[0].id;
     } catch (e) {
+        logger.error(e)
         return -1
     }
 }

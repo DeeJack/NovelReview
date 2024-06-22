@@ -8,23 +8,37 @@ config(); // Load the environment variables
 import { getLibrary, closeDatabase, backup, saveReview, deleteNovel, init, updateNovel, getNextNovel, updateNext } from './Database';
 import { Request, Response, NextFunction } from 'express'
 import { getMTLNovelSource, getWebNovelSource, sources } from './sources/SourceUtils';
-import * as cron from 'node-cron';
-
+import * as cron from 'node-cron'; // For scheduling backups
 import fs from 'fs';
 import express from 'express';
-const app = express();
 import cors from 'cors';
 import { closeBrowser } from './Browser';
 import { onLogin, onRegister, checkJWT } from './Authentication';
 import { JwtPayload } from 'jsonwebtoken';
+import { logger } from './Logger'
+
+const app = express();
 
 /**
  * Create the image folder
  */
-if (!fs.existsSync('public/images')) {
-    fs.mkdirSync('public/images');
+if (!fs.existsSync('public/')) {
+    fs.mkdirSync('public/');
+    fs.mkdirSync('public/images/');
 }
-
+/**
+ * Create database/backup folder
+ */
+if (!fs.existsSync('../data/')) {
+    fs.mkdirSync('../data/');
+    fs.mkdirSync('../data/backups/');
+}
+/**
+ * Create log folder
+ */
+if (!fs.existsSync('../log/')) {
+    fs.mkdirSync('../log/');
+}
 
 init(); // Initialize the database
 
@@ -39,6 +53,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json());
 app.use(express.static('public'));
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.path.includes('images')) {
+        next();
+        return;
+    }
+    logger.info(`${req.method} ${req.url} ${req.ip}`)
+    next();
+});
+
 /**
  * USER handlers
  */
@@ -49,8 +72,10 @@ app.post('/api/login', async (request, response) => {
 
     let result = await onLogin(username, password);
     if (result) {
+        logger.info(`Successful login ${username} ${request.ip}`)
         response.send({ token: result });
     } else {
+        logger.warn(`Invalid login ${username} ${password} ${request.ip}`)
         response.status(401).send('Invalid login');
     }
 });
@@ -61,8 +86,10 @@ app.post('/api/register', async (request, response) => {
 
     let result = await onRegister(username, password);
     if (result) {
+        logger.info(`Successful registration ${username} ${request.ip}`)
         response.send({ token: result });
     } else {
+        logger.warn(`Invalid registration ${username} ${password} ${request.ip}`)
         response.status(401).send('Invalid registration');
     }
 });
@@ -110,6 +137,7 @@ app.get('/search', (req: Request, res: Response) => {
             res.send(searchResults)
         })
         .catch((err) => {
+            logger.error(err)
             res.send('Error searching for novels')
         });
 });
@@ -124,6 +152,7 @@ app.get('/api/mtlnovel/search', (req: Request, res: Response) => {
             res.send(results)
         })
         .catch((err) => {
+            logger.error(err)
             res.send('Error searching for novels')
         });
 });
@@ -138,6 +167,7 @@ app.get('/api/webnovel/search', (req: Request, res: Response) => {
             res.send(results)
         })
         .catch((err) => {
+            logger.error(err)
             res.send('Error searching for novels')
         });
 });
@@ -151,7 +181,10 @@ app.get('/api/library', async (req: Request, res: Response) => {
 
     getLibrary(orderBy.toString(), direction.toString(), req.username)
         .then((library) => res.send(library))
-        .catch((err) => res.send('Error getting library'));
+        .catch((err) => {
+            logger.error(err)
+            res.send('Error getting library')
+        });
 });
 
 /**
@@ -174,6 +207,7 @@ app.post('/api/library', (req: Request, res: Response) => {
             res.send({ image: `images/${id}.png` });
         })
         .catch((err) => {
+            logger.error(err)
             res.send('Error saving review')
         });
 });
@@ -196,7 +230,10 @@ app.put('/api/library', async (req: Request, res: Response) => {
 
     updateNovel(url, title, rating, review, chapter, notes, tags, req.username)
         .then(() => res.send('Successfully updated library'))
-        .catch(() => res.send('Error updating library'))
+        .catch((err) => {
+            logger.error(err)
+            res.send('Error updating library')
+        })
 });
 
 /**
@@ -207,7 +244,10 @@ app.delete('/api/library/', (req: Request, res: Response) => {
 
     deleteNovel(url, req.username)
         .then(() => res.send('Successfully deleted from library'))
-        .catch((err) => res.send('Error deleting from library'));
+        .catch((err) => {
+            logger.error(err)
+            res.send('Error deleting from library')
+        });
 });
 
 /**
@@ -217,7 +257,10 @@ app.delete('/api/library/', (req: Request, res: Response) => {
 app.get('/api/next', (req: Request, res: Response) => {
     getNextNovel(req.username)
         .then((novel) => res.send(novel))
-        .catch((err) => res.send('Error getting next novel'));
+        .catch((err) => {
+            logger.error(err)
+            res.send('Error getting next novel')
+        });
 });
 
 app.put('/api/next', (req: Request, res: Response) => {
@@ -225,7 +268,10 @@ app.put('/api/next', (req: Request, res: Response) => {
 
     updateNext(text, req.username)
         .then(() => res.send('Successfully updated next'))
-        .catch((err) => res.send('Error updating next'));
+        .catch((err) => {
+            logger.error(err)
+            res.send('Error updating next')
+        });
 });
 
 app.listen(3000, '0.0.0.0', () => {
@@ -249,6 +295,7 @@ process.on('SIGINT', cleanup);
 process.on('SIGTERM', cleanup);
 process.on('exit', cleanup);
 process.on('uncaughtException', (err) => {
+    logger.error(err)
     console.error('Uncaught Exception:', err);
     cleanup();
 });

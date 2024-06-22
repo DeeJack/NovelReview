@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as cheerio from 'cheerio';
 import { getPage, closePage } from '../Browser'
+import { logger } from "../Logger";
 
 const HEADERS = {
     'Referer': 'https://www.webnovel.com/',
@@ -61,6 +62,7 @@ export class MTLNovel implements Source {
             const imageBuffer = await page.screenshot();
             fs.writeFileSync(destinationPath, imageBuffer);
         } catch (error) {
+            logger.error(error)
             console.error('Error:', error);
         } finally {
             await page.close();
@@ -112,6 +114,7 @@ export class MTLNovel implements Source {
             const jsonText = $(resultBooksContainer[0]).text().trim();
             return jsonText;
         } catch (error) {
+            logger.error(error)
             return '';
         } finally {
             await page.close();

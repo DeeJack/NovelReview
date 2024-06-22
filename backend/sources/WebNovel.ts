@@ -4,6 +4,7 @@ import fs from 'fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { getPage, closePage } from "../Browser";
+import { logger } from "../Logger";
 
 export class WebNovel implements Source {
     /**
@@ -19,6 +20,7 @@ export class WebNovel implements Source {
             const imageBuffer = await page.screenshot();
             fs.writeFileSync(destinationPath, imageBuffer);
         } catch (error) {
+            logger.error(error)
             console.error('Error:', error);
         } finally {
             await page.close();
