@@ -104,6 +104,8 @@ export default {
             })
         },
         async register() {
+            await this.checkValidation();
+            
             this.loading = true;
 
             const { valid } = await this.$refs.form.validate()
@@ -120,7 +122,7 @@ export default {
                 password: this.password
             }).then(response => {
                 if (response.status !== 200) {
-                    this.errorLogin = true;
+                    this.errorRegister = true;
                     this.$refs.form.validate();
                     return;
                 }
@@ -131,7 +133,7 @@ export default {
                 this.$router.push('/');
                 this.loading = false;
             }).catch(error => {
-                this.errorLogin = true;
+                this.errorRegister = true;
                 this.loading = false;
                 this.$refs.form.validate();
             })
