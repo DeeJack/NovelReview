@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import { login, register } from './Database';
 
 const jwtSecret: Secret = process.env.JWT_SECRET || 'asderino';
@@ -27,11 +27,14 @@ export async function onLogin(username: string, password: string): Promise<strin
     }
 }
 
-export function checkJWT(token: string): boolean {
+/**
+ * Check the validity of the JWT token, return the username if valid, null otherwise
+ */
+export function checkJWT(token: string): string |JwtPayload | null {
     try {
-        return jwt.verify(token, jwtSecret) !== null;
+        return jwt.verify(token, jwtSecret);
     } catch (e) {
-        return false;
+        return null;
     }
 }
 

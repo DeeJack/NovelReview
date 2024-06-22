@@ -5,7 +5,7 @@ import { config } from 'dotenv'
 
 config(); // Load the environment variables
 
-import { getLibrary, closeDatabase, backup, saveReview, deleteNovel, init, updateNovel, deleteNovelFromNext, getNextNovel, addNext, updateNext } from './Database';
+import { getLibrary, closeDatabase, backup, saveReview, deleteNovel, init, updateNovel, getNextNovel, updateNext } from './Database';
 import { Request, Response, NextFunction } from 'express'
 import { getMTLNovelSource, getWebNovelSource, sources } from './sources/SourceUtils';
 import * as cron from 'node-cron';
@@ -66,6 +66,24 @@ app.post('/api/register', async (request, response) => {
     }
 });
 
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if (token == null)
+        return res.sendStatus(401)
+
+    let username = checkJWT(token)
+    if (!username) {
+        return res.sendStatus(403)
+    }
+
+    req.username = username
+
+    next();
+}
+
+app.use(authenticateToken); // All routes after this will require authentication
 
 /**
  * LIBRARY HANDLERS
@@ -132,13 +150,6 @@ app.get('/api/library', async (req: Request, res: Response) => {
  * Save a review to the db
  */
 app.post('/api/library', (req: Request, res: Response) => {
-    const token = req.body.token
-
-    if (!checkJWT(token)) {
-        res.status(401).send('Invalid token')
-        return
-    }
-
     const title = req.body.title
     const url = req.body.url
     const image = req.body.image
@@ -163,13 +174,6 @@ app.post('/api/library', (req: Request, res: Response) => {
  * Update a novel in the library
  */
 app.put('/api/library', async (req: Request, res: Response) => {
-    const token = req.body.token
-
-    if (!checkJWT(token)) {
-        res.status(401).send('Invalid token')
-        return
-    }
-
     const rating = req.body.rating
     const review = req.body.review
     const chapter = req.body.chapter
@@ -191,13 +195,6 @@ app.put('/api/library', async (req: Request, res: Response) => {
  * Delete a novel from the library
  */
 app.delete('/api/library/', (req: Request, res: Response) => {
-    const token = req.body.token
-
-    if (!checkJWT(token)) {
-        res.status(401).send('Invalid token')
-        return
-    }
-
     const url = req.body.url
 
     deleteNovel(url)
@@ -215,51 +212,12 @@ app.get('/api/next', (req: Request, res: Response) => {
         .catch((err) => res.send('Error getting next novel'));
 });
 
-app.post('/api/next', (req: Request, res: Response) => {
-    const token = req.body.token
-
-    if (!checkJWT(token)) {
-        res.status(401).send('Invalid token')
-        return
-    }
-
-    const title = req.body.title
-    const url = req.body.url
-    const image = req.body.image
-
-    addNext(title, url, image)
-        .then(() => res.send('Successfully added to next'))
-        .catch((err) => res.send('Error adding to next'));
-});
-
 app.put('/api/next', (req: Request, res: Response) => {
-    const token = req.body.token
-
-    if (!checkJWT(token)) {
-        res.status(401).send('Invalid token')
-        return
-    }
-
     const text = req.body.text
 
     updateNext(text)
         .then(() => res.send('Successfully updated next'))
         .catch((err) => res.send('Error updating next'));
-});
-
-app.delete('/api/next/', (req: Request, res: Response) => {
-    const token = req.body.token
-
-    if (!checkJWT(token)) {
-        res.status(401).send('Invalid token')
-        return
-    }
-
-    const id = req.body.id
-
-    deleteNovelFromNext(id)
-        .then(() => res.send('Successfully deleted from next'))
-        .catch((err) => res.send('Error deleting from next'));
 });
 
 app.listen(3000, '0.0.0.0', () => {
