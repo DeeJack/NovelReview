@@ -1,6 +1,10 @@
 /**
  * Starts, stops, and handles the server stuff
  */
+import { config } from 'dotenv'
+
+config(); // Load the environment variables
+
 import { getLibrary, closeDatabase, backup, saveReview, deleteNovel, init, updateNovel, deleteNovelFromNext, getNextNovel, addNext, updateNext } from './Database';
 import { Request, Response, NextFunction } from 'express'
 import { getMTLNovelSource, getWebNovelSource, sources } from './sources/SourceUtils';
@@ -11,6 +15,7 @@ import express from 'express';
 const app = express();
 import cors from 'cors';
 import { closeBrowser } from './Browser';
+import { onLogin, onRegister, checkJWT } from './Authentication';
 
 /**
  * Create the image folder
@@ -18,6 +23,7 @@ import { closeBrowser } from './Browser';
 if (!fs.existsSync('public/images')) {
     fs.mkdirSync('public/images');
 }
+
 
 init(); // Initialize the database
 
@@ -31,6 +37,35 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 app.use(express.json());
 app.use(express.static('public'));
+
+/**
+ * USER handlers
+ */
+
+app.post('/api/login', async (request, response) => {
+    let username = request.body.username;
+    let password = request.body.password;
+
+    let result = await onLogin(username, password);
+    if (result) {
+        response.send({ token: result });
+    } else {
+        response.status(401).send('Invalid login');
+    }
+});
+
+app.post('/api/register', async (request, response) => {
+    let username = request.body.username;
+    let password = request.body.password;
+
+    let result = await onRegister(username, password);
+    if (result) {
+        response.send({ token: result });
+    } else {
+        response.status(401).send('Invalid registration');
+    }
+});
+
 
 /**
  * LIBRARY HANDLERS
@@ -97,6 +132,13 @@ app.get('/api/library', async (req: Request, res: Response) => {
  * Save a review to the db
  */
 app.post('/api/library', (req: Request, res: Response) => {
+    const token = req.body.token
+
+    if (!checkJWT(token)) {
+        res.status(401).send('Invalid token')
+        return
+    }
+
     const title = req.body.title
     const url = req.body.url
     const image = req.body.image
@@ -109,7 +151,7 @@ app.post('/api/library', (req: Request, res: Response) => {
             res.send({ image: `images/${id}.png` });
         })
         .catch((err) => {
-            throw err;
+            res.send('Error saving review')
         });
 });
 
@@ -117,6 +159,13 @@ app.post('/api/library', (req: Request, res: Response) => {
  * Update a novel in the library
  */
 app.put('/api/library', async (req: Request, res: Response) => {
+    const token = req.body.token
+
+    if (!checkJWT(token)) {
+        res.status(401).send('Invalid token')
+        return
+    }
+
     const rating = req.body.rating
     const review = req.body.review
     const chapter = req.body.chapter
@@ -134,6 +183,13 @@ app.put('/api/library', async (req: Request, res: Response) => {
  * Delete a novel from the library
  */
 app.delete('/api/library/', (req: Request, res: Response) => {
+    const token = req.body.token
+
+    if (!checkJWT(token)) {
+        res.status(401).send('Invalid token')
+        return
+    }
+
     const url = req.body.url
 
     deleteNovel(url)
@@ -152,6 +208,13 @@ app.get('/api/next', (req: Request, res: Response) => {
 });
 
 app.post('/api/next', (req: Request, res: Response) => {
+    const token = req.body.token
+
+    if (!checkJWT(token)) {
+        res.status(401).send('Invalid token')
+        return
+    }
+
     const title = req.body.title
     const url = req.body.url
     const image = req.body.image
@@ -162,6 +225,13 @@ app.post('/api/next', (req: Request, res: Response) => {
 });
 
 app.put('/api/next', (req: Request, res: Response) => {
+    const token = req.body.token
+
+    if (!checkJWT(token)) {
+        res.status(401).send('Invalid token')
+        return
+    }
+
     const text = req.body.text
 
     updateNext(text)
@@ -170,6 +240,13 @@ app.put('/api/next', (req: Request, res: Response) => {
 });
 
 app.delete('/api/next/', (req: Request, res: Response) => {
+    const token = req.body.token
+
+    if (!checkJWT(token)) {
+        res.status(401).send('Invalid token')
+        return
+    }
+
     const id = req.body.id
 
     deleteNovelFromNext(id)

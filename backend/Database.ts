@@ -6,6 +6,8 @@ import * as fs from 'fs';
 import { Novel } from './models/Novel';
 import { getSourceFromURL, sources } from './sources/SourceUtils';
 import * as path from 'path';
+import { comparePassword } from './Authentication';
+
 /**
  * Instance for the SQLite database
  */
@@ -24,6 +26,7 @@ export async function init() {
         // Create table library if it doesn't exist
         await runQueryAsync('CREATE TABLE IF NOT EXISTS library (id INTEGER PRIMARY KEY, title TEXT, url TEXT, image TEXT, chapter INT, source TEXT, rating FLOAT, review TEXT, notes TEXT, tags TEXT, added_at datetime default current_timestamp)')
         // db.run('CREATE TABLE IF NOT EXISTS next (id INTEGER PRIMARY KEY, order int, title TEXT, url TEXT, comments TEXT, read BOOLEAN, image TEXT)')
+        await runQueryAsync('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)')
         await runQueryAsync('CREATE TABLE IF NOT EXISTS nextTemp (id INTEGER PRIMARY KEY, description TEXT)')
         await runQueryAsync('INSERT OR IGNORE INTO nextTemp (id, description) VALUES (1, "")')
     } catch (e) {
@@ -260,5 +263,38 @@ export async function updateNext(description: string) {
         await runQueryAsync(updateQuery, [description]);
     } catch (e) {
         throw e
+    }
+}
+
+export async function login(username: string, clearPassword: string): Promise<boolean> {
+    const selectQuery = 'SELECT * FROM users WHERE username = ?';
+
+    try {
+        let rows = await selectAllAsync<{ password: string }>(selectQuery, [username]);
+        if (rows.length === 0) {
+            return false;
+        }
+        let hashedPassword = rows[0].password;
+        return await comparePassword(clearPassword, hashedPassword);
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
+}
+
+export async function register(username: string, password: string): Promise<boolean> {
+    let existingUsers = await selectAllAsync<{ username: string }>('SELECT username FROM users WHERE username = ?', [username]);
+
+    if (existingUsers.length > 0) {
+        return false;
+    }
+
+    const insertQuery = 'INSERT INTO users (username, password) VALUES (?, ?)'
+
+    try {
+        await runQueryAsync(insertQuery, [username, password]);
+        return true;
+    } catch (e) {
+        return false;
     }
 }

@@ -38,9 +38,10 @@ To get started:
    1. Create a `.env` file in the `frontend/` directory
    2. Set the `VITE_API_URL` to the IP address for the server. By default, the value will be set to `http://127.0.0.1:3000` (only local)
    3. Set `VITE_PORT` to change the frontend's port (default: 5000)
-3. Run the server in the backend directory: `npm run dev`
-4. Run the frontend in the frontend directory: `npm run dev`
-5. [Optional]: use make to build and run them: `make build`, `make frontend`[/backend]
+3. Set bcrypt's secret key: create a `.env` file in the `backend/` directory, and set the `JWT_SECRET` to a random private key (any alphanumeric string).
+4. Run the server in the backend directory: `npm run dev`
+5. Run the frontend in the frontend directory: `npm run dev`
+6. [Optional]: use make to build and run them: `make build`, `make frontend`[/backend]
 
 Once done, access the frontend from `http://localhost:5000/` (by default).
 
