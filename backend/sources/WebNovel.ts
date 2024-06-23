@@ -51,7 +51,7 @@ export class WebNovel implements Source {
                 title: jsonData[i].name,
                 url: jsonData[i].url,
                 source: "webnovel",
-                image: jsonData[i].image
+                image: jsonData[i].image?.replace('http:', 'https:')
             });
         }
         return novels;

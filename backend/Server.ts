@@ -239,7 +239,7 @@ app.post('/api/library', (req: Request, res: Response) => {
 
     saveReview(url, title, image, source, rating, review, req.username)
         .then((id) => {
-            res.send({ image: `images/${id}.png` });
+            res.send({ image: `/images/${id}.png` });
         })
         .catch((err) => {
             logger.error(err)

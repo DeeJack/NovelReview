@@ -23,7 +23,7 @@
                     </v-btn>
                 </div>
                 <div class="center" style="background: black;">
-                    <v-img class="imageThumb" :lazy-src="`/images/noimage.png`" :src="`/${novel.image}`"
+                    <v-img class="imageThumb" :lazy-src="`/images/noimage.png`" :src="`${novel.image}`"
                         @load="imageLoaded = true" @error="this.src = this.src" cover width="auto" height="276px"
                         :style="novel.source.includes('webnovel') ? 'object-fit: cover' : ''">
 
