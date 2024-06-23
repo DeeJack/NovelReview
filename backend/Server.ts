@@ -17,7 +17,38 @@ import { onLogin, onRegister, checkJWT } from './Authentication';
 import { JwtPayload } from 'jsonwebtoken';
 import { logger } from './Logger'
 
+import https from 'https';
+import path from 'path';
+
 const app = express();
+const useHTTPS = process.env.USE_HTTPS === 'true'
+const PORT_STRING = process.env.PORT || '3000'
+let PORT = 3000;
+
+try {
+    PORT = parseInt(PORT_STRING);
+    if (isNaN(PORT) || PORT < 0 || PORT > 65535) {
+        throw new Error(`Invalid port number: ${PORT_STRING}`);
+    }
+} catch (err) {
+    logger.error(err);
+}
+
+if (useHTTPS) {
+    // Load SSL certificates
+    const privateKey = fs.readFileSync(path.resolve(__dirname, '../ssl/server.key'), 'utf8');
+    const certificate = fs.readFileSync(path.resolve(__dirname, '../ssl/server.cert'), 'utf8');
+    const credentials = { key: privateKey, cert: certificate };
+    const httpsServer = https.createServer(credentials, app);
+
+    httpsServer.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server is running on port 3000`);
+    });
+} else {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server is running on port 3000`);
+    });
+}
 
 /**
  * Create the image folder
@@ -272,10 +303,6 @@ app.put('/api/next', (req: Request, res: Response) => {
             logger.error(err)
             res.send('Error updating next')
         });
-});
-
-app.listen(3000, '0.0.0.0', () => {
-    console.log(`Server is running on port 3000`);
 });
 
 cron.schedule('0 0 * * *', () => { // This will run at midnight every day
