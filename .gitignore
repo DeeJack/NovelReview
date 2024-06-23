@@ -165,4 +165,7 @@ backups/*
 backend/public/images/*
 data/*
 
+backend/public/index.html
+backend/public/assets/
+
 */package-lock.json

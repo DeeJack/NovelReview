@@ -59,6 +59,9 @@ export default defineConfig(({ mode }) => {
     },
     env: {
       BACKEND_DEFAULT: 'http://127.0.0.1:3000' 
+    },
+    build: {
+      outDir: '../backend/public',
     }
   };
 });

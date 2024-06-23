@@ -10,6 +10,12 @@ frontend:
 backend:
 	cd backend && npm run dev < nul
 
+all:
+	cd frontend && npm run build
+	cd backend && npm run build
+	cd backend && npm run start
+
 .PHONY: frontend
 .PHONY: backend
 .PHONY: build
+.PHONY: all

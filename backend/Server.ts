@@ -36,8 +36,8 @@ try {
 
 if (useHTTPS) {
     // Load SSL certificates
-    const privateKey = fs.readFileSync(path.resolve(__dirname, '../ssl/server.key'), 'utf8');
-    const certificate = fs.readFileSync(path.resolve(__dirname, '../ssl/server.cert'), 'utf8');
+    const privateKey = fs.readFileSync('../ssl/server.key', 'utf8');
+    const certificate = fs.readFileSync('../ssl/server.cert', 'utf8');
     const credentials = { key: privateKey, cert: certificate };
     const httpsServer = https.createServer(credentials, app);
 
@@ -153,6 +153,10 @@ app.use(authenticateToken); // All routes after this will require authentication
 /**
  * LIBRARY HANDLERS
  */
+
+app.get('/', (req: Request, res: Response) => {
+    res.sendFile(path.resolve(__dirname, '../public/index.html'));
+});
 
 /**
  * Search from all sources

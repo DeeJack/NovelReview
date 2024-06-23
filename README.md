@@ -39,14 +39,14 @@ To get started:
 
 ### Configuration
 
-frontend/.env [OPTIONAL]:
+frontend/.env [OPTIONAL] [example in [frontend/.env-example](frontend/.env-example)]:
 
 - Set the server's IP address (if they are not in the same host):
    1. Create a `.env` file in the `frontend/` directory
    2. Set the `VITE_API_URL` to the IP address for the server. By default, the value will be set to `http://127.0.0.1:3000` (only local)
    3. Set `VITE_PORT` to change the frontend's port (default: 5000)
 
-backend/.env:
+backend/.env [example in [backend/.env-example](backend/.env-example)]:
 
 1. [REQUIRED] Set BCrypt's secret key: create a `.env` file in the `backend/` directory, and set the `JWT_SECRET` to a random private key (any alphanumeric string).
 2. [OPTIONAL] Set the backend's port: set `PORT=3000`, or whichever port you prefer (3000 by default)
@@ -56,9 +56,19 @@ backend/.env:
 
 ### Run the web app
 
-1. Run the server in the backend directory: `npm run dev`
-2. Run the frontend in the frontend directory: `npm run dev`
-3. [Optional]: use make to build and run them: `make build`, `make frontend`[/backend]
+1. Build the frontend: `npm run build` in `frontend/`
+2. Build the backend: `npm run build` in `backend/`
+3. Run the backend: `npm run start` in `backend/`
+
+### Run web app with make
+
+If you have make:
+
+1. Build the project: `make build` in the root directory
+2. Run the project: `make all` in the root directory
+3. [OPTIONAL] To run the dev version (with automatic reload on changes): `make frontend` (or backend).
+
+### Access the app
 
 Once done, access the frontend from `http://localhost:5000/` (by default).
 
