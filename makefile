@@ -15,7 +15,13 @@ all:
 	cd backend && npm run build
 	cd backend && npm run start
 
+linux:
+	cd frontend && npm run build
+	cd backend && npm run build
+	cd backend && Xvfb& && xvfb-run -a npm run start
+
 .PHONY: frontend
 .PHONY: backend
 .PHONY: build
 .PHONY: all
+.PHONY: linux

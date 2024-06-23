@@ -70,7 +70,7 @@ If you have make:
 
 ### Access the app
 
-Once done, access the frontend from `http://localhost:5000/` (by default).
+Once done, access the frontend from `http://localhost:3000/` (by default).
 
 ### Puppeteer on Linux
 
@@ -80,6 +80,7 @@ Then, if you are using a computer that doesn't have a display (probably a VPS), 
 
 1. `Xvfb&` (not sure if needed)
 2. `npm run build`, `xvfb-run -a node dist/Server.js`, this will create a virtual display for the browser.
+3. [MAKE] If you have make, you can just run `make linux` after `make build`, to start the server with xvfb.
 
 ## Technologies Used
 
