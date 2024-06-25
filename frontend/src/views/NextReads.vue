@@ -56,12 +56,17 @@ export default {
                 clearTimeout(this.timer)
             }
 
+            console.log(this.nextReads)
+
             this.timer = setTimeout(() => {
                 axios.put(`/api/next`, {
-                    text: this.nextRead
-                }, {
+                    text: this.nextReads
+                }, 
+                {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                        'Data-Type': 'json'
                     }
                 })
                     .then((response) => {

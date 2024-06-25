@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           ws: true,
+          rewrite: (p) => p.replace(/^\/login/, ''),
         },
         '/images': {
           target: API_URL,
@@ -49,6 +50,7 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           ws: true,
+          rewrite: (p) => p.replace(/^\/login/, ''),
         }
       },
       open: process.platform === 'darwin',

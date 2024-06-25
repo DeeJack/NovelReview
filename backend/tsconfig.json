@@ -6,7 +6,6 @@
         "target": "ES6", // This is the JavaScript version that the TypeScript code will be compiled to 
         "allowSyntheticDefaultImports": true, // Allow "import asd from dsa"
         "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts) [node_modules]
-        "types": [],
         "moduleResolution": "node", // This tells TypeScript to use the Node.js module resolution strategy
         "module": "CommonJS", // Use modules
         "esModuleInterop": true // Allow default imports from modules with no default export
@@ -15,7 +14,7 @@
         "sources/*",
         "models/*",
         "Server.ts",
-        "Database.ts"
+        "Database.ts",
     ], // This tells TypeScript to include all files in the src directory
     "exclude": [
         "node_modules/**",
