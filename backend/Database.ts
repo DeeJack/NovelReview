@@ -12,7 +12,7 @@ import { logger } from './Logger';
 /**
  * Instance for the SQLite database
  */
-const db = new sqlite3.Database('../data/library.db')
+const db = new sqlite3.Database('../data/library.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE)
 const IMAGE_PATH = './public/images'
 
 /**
